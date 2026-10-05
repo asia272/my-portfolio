@@ -1,8 +1,8 @@
 
 import { Hero } from "@/components/section/hero";
 import Navbar from "@/components/layout/Navbar";
-import { FloatingDock } from "@/components/magic/dock";
-import { Contact, Footer, Process, Projects, ScrollBand, Services } from "@/components/sections";
+
+// import { Contact, Footer, Process, Projects, ScrollBand, Services } from "@/components/sections";
 import About from "@/components/section/About";
 import { Skills } from "@/components/section/Skills";
 
@@ -15,14 +15,14 @@ export default function Home() {
         <Hero />
         <About />
         <Skills />
-        <ScrollBand />
+        {/* <ScrollBand />
         <Projects />
         <Process />
         <Services />
-        <Contact />
+        <Contact /> */}
       </main>
-      <Footer />
-      <FloatingDock />
+      {/* <Footer /> */}
+
     </>
   );
 }

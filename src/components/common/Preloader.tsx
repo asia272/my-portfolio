@@ -7,7 +7,7 @@ import {
 } from "motion/react";
 import { useEffect, useState } from "react";
 
-import { INTRO } from "../animations";
+import { INTRO } from "../animations/animations";
 
 export default function Preloader() {
     const [done, setDone] = useState(false);

@@ -1,52 +1,11 @@
 "use client";
 import { animate, motion } from "motion/react";
 import { useEffect, useRef, useState, type ElementType, type ReactNode } from "react";
-import { cn } from "@/lib/utils";
 
-/** Light beam travelling around the parent's border. Parent needs `relative` and a radius. */
-export function BorderBeam({ duration = 8, delay = 0, from = "var(--gold)", to = "var(--primary)" }: { duration?: number; delay?: number; from?: string; to?: string }) {
-  return (
-    <div aria-hidden className="pointer-events-none absolute inset-0 rounded-[inherit] border-[1.5px] border-transparent [mask-clip:padding-box,border-box] [mask-composite:intersect] [mask-image:linear-gradient(transparent,transparent),linear-gradient(#000,#000)]">
-      <motion.div className="absolute aspect-square w-40 [offset-path:rect(0_auto_auto_0_round_160px)]" style={{ background: `linear-gradient(to left, ${from}, ${to}, transparent)` }}
-        initial={{ offsetDistance: "0%" }} animate={{ offsetDistance: "100%" }} transition={{ repeat: Infinity, ease: "linear", duration, delay: -delay }} />
-    </div>
-  );
-}
 
-/** Meteor shower; deterministic values keep SSR and client markup identical. */
-export function Meteors({ count = 14 }: { count?: number }) {
-  return (
-    <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-      {Array.from({ length: count }, (_, i) => (
-        <motion.span key={i} className="absolute h-px w-16 bg-gradient-to-r from-white/80 to-transparent" style={{ left: `${(i * 37) % 100}%`, top: `${-10 - (i % 4) * 8}%`, rotate: 215 }}
-          initial={{ x: 0, y: 0, opacity: 0 }} animate={{ x: -420, y: 420, opacity: [0, 1, 0] }}
-          transition={{ duration: 2 + (i % 5) * 0.7, delay: (i * 0.73) % 5, repeat: Infinity, ease: "easeIn" }} />
-      ))}
-    </div>
-  );
-}
 
-export function Ripple({ className }: { className?: string }) {
-  return (
-    <div aria-hidden className={cn("pointer-events-none absolute grid place-items-center", className)}>
-      {[0, 1, 2, 3, 4].map((i) => (
-        <motion.div key={i} className="absolute rounded-full border border-primary/40 bg-primary/[0.04]" style={{ width: 180 + i * 110, height: 180 + i * 110 }}
-          animate={{ scale: [1, 1.1, 1], opacity: [0.7, 0.2, 0.7] }} transition={{ duration: 5, delay: i * 0.35, repeat: Infinity, ease: "easeInOut" }} />
-      ))}
-    </div>
-  );
-}
 
-type ShimmerProps = { as?: ElementType; className?: string; children: ReactNode } & Record<string, unknown>;
-/** Button with a rotating gold light running around its edge. */
-export function ShimmerButton({ as: Tag = "button", className, children, ...props }: ShimmerProps) {
-  return (
-    <Tag className={cn("group relative inline-flex overflow-hidden rounded-full p-[1.5px] font-medium", className)} {...props}>
-      <motion.span aria-hidden className="absolute -inset-[200%] [background:conic-gradient(from_0deg,transparent_0_290deg,var(--gold)_360deg)]" animate={{ rotate: 360 }} transition={{ duration: 3, repeat: Infinity, ease: "linear" }} />
-      <span className="relative inline-flex items-center gap-2 rounded-full bg-card px-7 py-3.5 text-card-foreground transition-colors group-hover:bg-secondary">{children}</span>
-    </Tag>
-  );
-}
+
 
 /** Interactive particle network that flees the cursor. */
 export function Particles({ count = 60 }: { count?: number }) {

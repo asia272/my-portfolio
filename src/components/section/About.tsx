@@ -14,7 +14,7 @@ import {
 
 import Container from "@/components/common/Container";
 import SectionHeading from "@/components/common/SectionHeading";
-import { Counter, Reveal, ScrollFillText, SpotlightCard } from "../animations";
+import { Counter, Reveal, ScrollFillText, SpotlightCard } from "../animations/animations";
 import { stats } from "@/lib/data";
 import { CodeWindow } from "../magic/effects";
 import AboutTimeLine from "../AboutTimeLine";

@@ -1,6 +1,6 @@
 import { useScroll, useSpring } from 'motion/react';
 import { useRef } from "react";
-import { Reveal } from './animations';
+import { Reveal } from './animations/animations';
 import { timeline } from '@/lib/data';
 import { motion, type MotionValue } from "motion/react";
 

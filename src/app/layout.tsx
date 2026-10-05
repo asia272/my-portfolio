@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import { ThemeProvider } from "next-themes";
-// import { Shell } from "@/components/effects";
-import { Shell } from "@/components/Shell";
+
 import "./globals.css";
 import "../styles/portfolio.css";
+import { MotionConfig } from "motion/react";
+import Preloader from "@/components/common/Preloader";
+import ScrollProgress from "@/components/common/ScrollProgress";
 
 const poppins = Poppins({ subsets: ["latin"], weight: ["400", "500", "600", "700"], variable: "--font-poppins" });
 
@@ -18,7 +20,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" suppressHydrationWarning>
       <body className={`${poppins.variable} antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
-          <Shell>{children}</Shell>
+          <MotionConfig reducedMotion="user">
+            <Preloader />
+            {/* <Cursor /> */}
+            <ScrollProgress />
+            {children}
+          </MotionConfig>
         </ThemeProvider>
       </body>
     </html>

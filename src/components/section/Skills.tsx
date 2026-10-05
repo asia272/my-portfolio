@@ -16,7 +16,7 @@ import {
 import Container from "../common/Container";
 import SectionHeading from "../common/SectionHeading";
 import { skillGroups } from "@/lib/data";
-import { Reveal, Counter, EASE } from "../animations";
+import { Reveal, Counter, EASE } from "../animations/animations";
 import { OrbitingCircles } from "../magic/effects";
 import { Badge } from "../ui/badge";
 
