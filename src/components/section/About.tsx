@@ -1,27 +1,39 @@
 "use client";
 
-import { useRef, type ReactNode, type MouseEvent } from "react";
+
 import {
     motion,
-    useMotionTemplate,
-    useMotionValue,
     useReducedMotion,
     useScroll,
     useSpring,
     useTransform,
-    type Variants,
-} from "framer-motion";
+} from "motion/react";
+import { useRef } from "react";
 
-import Container from "@/components/common/Container";
-import SectionHeading from "@/components/common/SectionHeading";
-import { Counter, Reveal, ScrollFillText, SpotlightCard } from "../animations/animations";
-import { stats } from "@/lib/data";
-import { CodeWindow } from "../magic/effects";
-import AboutTimeLine from "../AboutTimeLine";
+import {
+    ABOUT_PARAGRAPHS,
+    EDUCATION,
+    STATS,
+    VALUES,
+} from "@/data/portfolio";
+import { Badge } from "../ui/badge";
+import Container from "../common/Container";
+import SectionHeading from "../common/SectionHeading";
+import {
+    GraduationCap,
+    Globe,
+    Sparkles,
+    Wrench,
+} from "lucide-react";
+import {
+    Counter,
+    Reveal,
+    SpotlightCard,
+} from "@/components/animations/animations";
 
-/* ================================================================
-   CONFIG
-================================================================ */
+/* ============================================================
+   ABOUT
+============================================================ */
 
 const skills = [
     "Next.js",
@@ -37,107 +49,6 @@ const skills = [
     "Auth",
     "Vercel",
 ];
-
-const floatingChips = [
-    { label: "Pakistan", className: "right-6 top-5 sm:right-8", delay: 0 },
-    { label: "Open to work", className: "bottom-24 right-6 sm:right-10", delay: 1.2 },
-];
-
-const principles = [
-    { k: "Focus", v: "Modern web experiences" },
-    { k: "Approach", v: "Build · Refine · Ship" },
-    { k: "Mindset", v: "Always improving" },
-];
-
-/* ================================================================
-   REUSABLE ANIMATION PIECES
-================================================================ */
-
-/** 3D tilt card that follows the cursor with spring physics */
-function TiltCard({
-    children,
-    className = "",
-    intensity = 7,
-}: {
-    children: ReactNode;
-    className?: string;
-    intensity?: number;
-}) {
-    const reduce = useReducedMotion();
-    const ref = useRef<HTMLDivElement>(null);
-    const x = useMotionValue(0);
-    const y = useMotionValue(0);
-
-    const rotateX = useSpring(useTransform(y, [-0.5, 0.5], [intensity, -intensity]), {
-        stiffness: 180,
-        damping: 18,
-    });
-    const rotateY = useSpring(useTransform(x, [-0.5, 0.5], [-intensity, intensity]), {
-        stiffness: 180,
-        damping: 18,
-    });
-
-    const onMove = (e: MouseEvent<HTMLDivElement>) => {
-        if (reduce || !ref.current) return;
-        const r = ref.current.getBoundingClientRect();
-        x.set((e.clientX - r.left) / r.width - 0.5);
-        y.set((e.clientY - r.top) / r.height - 0.5);
-    };
-
-    const onLeave = () => {
-        x.set(0);
-        y.set(0);
-    };
-
-    return (
-        <motion.div
-            ref={ref}
-            onMouseMove={onMove}
-            onMouseLeave={onLeave}
-            style={
-                reduce
-                    ? undefined
-                    : {
-                        rotateX,
-                        rotateY,
-                        transformPerspective: 1200,
-                        transformStyle: "preserve-3d",
-                    }
-            }
-            className={className}
-        >
-            {children}
-        </motion.div>
-    );
-}
-
-/** Card wrapper with a slowly rotating conic-gradient border */
-function GlowBorder({
-    children,
-    className = "",
-}: {
-    children: ReactNode;
-    className?: string;
-}) {
-    const reduce = useReducedMotion();
-
-    return (
-        <div className={`relative overflow-hidden rounded-3xl p-px ${className}`}>
-            <motion.div
-                aria-hidden
-                className="pointer-events-none absolute left-1/2 top-1/2 aspect-square w-[250%] -translate-x-1/2 -translate-y-1/2 opacity-70"
-                style={{
-                    background:
-                        "conic-gradient(from 0deg, transparent 0deg, var(--chart-2) 60deg, transparent 120deg, transparent 200deg, var(--chart-3) 260deg, transparent 320deg)",
-                }}
-                animate={reduce ? undefined : { rotate: 360 }}
-                transition={{ duration: 10, ease: "linear", repeat: Infinity }}
-            />
-            <div className="relative h-full rounded-[inherit]">{children}</div>
-        </div>
-    );
-}
-
 /** Infinite horizontal marquee of skill pills */
 function SkillsMarquee() {
     const reduce = useReducedMotion();
@@ -172,277 +83,294 @@ function SkillsMarquee() {
     );
 }
 
-/** Floating chip that gently bobs */
-function FloatingChip({
-    label,
-    className,
-    delay,
-}: {
-    label: string;
-    className: string;
-    delay: number;
-}) {
-    const reduce = useReducedMotion();
 
-    return (
-        <motion.span
-            className={`pointer-events-none absolute z-20 hidden items-center gap-2 rounded-full border border-border/70 bg-background/60 px-3 py-1.5 text-[11px] font-medium text-foreground shadow-lg backdrop-blur-md md:flex ${className}`}
-            initial={{ opacity: 0, scale: 0.8 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.6 + delay * 0.2, type: "spring", stiffness: 160 }}
-        >
-            <motion.span
-                className="flex items-center gap-2"
-                animate={reduce ? undefined : { y: [0, -6, 0] }}
-                transition={{ duration: 4, delay, repeat: Infinity, ease: "easeInOut" }}
-            >
-                <span className="size-1.5 rounded-full bg-gold" />
-                {label}
-            </motion.span>
-        </motion.span>
-    );
-}
 
-const staggerParent: Variants = {
-    hidden: {},
-    show: { transition: { staggerChildren: 0.12, delayChildren: 0.2 } },
-};
 
-const staggerChild: Variants = {
-    hidden: { opacity: 0, y: 18, filter: "blur(6px)" },
-    show: {
-        opacity: 1,
-        y: 0,
-        filter: "blur(0px)",
-        transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] },
-    },
-};
 
-/* ================================================================
-   ABOUT SECTION
-================================================================ */
+
 
 export default function About() {
-    const reduce = useReducedMotion();
     const sectionRef = useRef<HTMLElement>(null);
+    const reduceMotion = useReducedMotion();
 
+    /*
+     * Section scroll progress.
+     *
+     * Used only for the subtle background movement and the
+     * education timeline reveal.
+     */
     const { scrollYProgress } = useScroll({
         target: sectionRef,
-        offset: ["start end", "end start"],
+        offset: ["start 0.82", "end 0.25"],
     });
 
-    // Parallax for background orbs
-    const orbY1 = useTransform(scrollYProgress, [0, 1], [-120, 160]);
-    const orbY2 = useTransform(scrollYProgress, [0, 1], [140, -160]);
-    const gridY = useTransform(scrollYProgress, [0, 1], [0, -80]);
+    const smoothProgress = useSpring(scrollYProgress, {
+        stiffness: 100,
+        damping: 30,
+        mass: 0.5,
+    });
 
-    // Scroll progress line
-    const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 28 });
+    /* ----------------------------------------------------------
+       Background parallax
+    ---------------------------------------------------------- */
 
-    // Mouse-follow spotlight over the whole section
-    const mx = useMotionValue(-400);
-    const my = useMotionValue(-400);
-    const spotlight = useMotionTemplate`radial-gradient(520px circle at ${mx}px ${my}px, color-mix(in oklab, var(--chart-2) 14%, transparent), transparent 70%)`;
+    const leftGlowY = useTransform(
+        smoothProgress,
+        [0, 1],
+        reduceMotion ? [0, 0] : [-60, 80],
+    );
 
-    const onSectionMove = (e: MouseEvent<HTMLElement>) => {
-        if (reduce || !sectionRef.current) return;
-        const r = sectionRef.current.getBoundingClientRect();
-        mx.set(e.clientX - r.left);
-        my.set(e.clientY - r.top);
-    };
+    const rightGlowY = useTransform(
+        smoothProgress,
+        [0, 1],
+        reduceMotion ? [0, 0] : [70, -70],
+    );
 
+    const gridY = useTransform(
+        smoothProgress,
+        [0, 1],
+        reduceMotion ? [0, 0] : [0, -35],
+    );
+    const VALUE_ICONS = {
+        sparkles: Sparkles,
+        wrench: Wrench,
+        globe: Globe,
+    } as const;
     return (
         <section
             id="about"
             ref={sectionRef}
-            onMouseMove={onSectionMove}
-            className="section relative overflow-hidden"
+            className="relative section overflow-hidden"
         >
-            {/* ============================================================
-                BACKGROUND LAYERS
-            ============================================================ */}
-            <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
-                {/* Grid */}
+            {/* ======================================================
+          PREMIUM BACKGROUND
+      ====================================================== */}
+
+            <div
+                aria-hidden
+                className="pointer-events-none absolute inset-0 -z-10 overflow-hidden"
+            >
+                {/* Subtle technical grid */}
+
                 <motion.div
-                    style={{
-                        y: reduce ? 0 : gridY,
-                        backgroundImage:
-                            "linear-gradient(to right, color-mix(in oklab, var(--foreground) 6%, transparent) 1px, transparent 1px), linear-gradient(to bottom, color-mix(in oklab, var(--foreground) 6%, transparent) 1px, transparent 1px)",
-                        backgroundSize: "56px 56px",
-                        maskImage:
-                            "radial-gradient(ellipse 70% 60% at 50% 40%, black, transparent 75%)",
-                        WebkitMaskImage:
-                            "radial-gradient(ellipse 70% 60% at 50% 40%, black, transparent 75%)",
-                    }}
-                    className="absolute inset-0"
+                    style={{ y: gridY }}
+                    className="absolute inset-0 opacity-[0.025]"
+                >
+                    <div
+                        className="absolute inset-0"
+                        style={{
+                            backgroundImage: `
+                linear-gradient(
+                  to right,
+                  var(--foreground) 1px,
+                  transparent 1px
+                ),
+                linear-gradient(
+                  to bottom,
+                  var(--foreground) 1px,
+                  transparent 1px
+                )
+              `,
+                            backgroundSize: "64px 64px",
+                            maskImage:
+                                "radial-gradient(ellipse 75% 65% at 50% 45%, black, transparent 78%)",
+                            WebkitMaskImage:
+                                "radial-gradient(ellipse 75% 65% at 50% 45%, black, transparent 78%)",
+                        }}
+                    />
+                </motion.div>
+
+                {/* Left purple/blue glow */}
+
+                <motion.div
+                    style={{ y: leftGlowY }}
+                    className="absolute -left-52 top-24 size-[430px] rounded-full bg-[var(--chart-2)]/10 blur-[120px]"
                 />
 
-                {/* Parallax orbs */}
+                {/* Right purple glow */}
+
                 <motion.div
-                    style={{ y: reduce ? 0 : orbY1 }}
-                    className="absolute -left-32 top-20 size-[420px] rounded-full bg-[var(--chart-2)]/15 blur-[110px]"
-                />
-                <motion.div
-                    style={{ y: reduce ? 0 : orbY2 }}
-                    className="absolute -right-32 bottom-10 size-[460px] rounded-full bg-[var(--chart-3)]/15 blur-[120px]"
+                    style={{ y: rightGlowY }}
+                    className="absolute -right-52 bottom-20 size-[460px] rounded-full bg-[var(--chart-3)]/10 blur-[125px]"
                 />
 
-                {/* Cursor spotlight */}
-                <motion.div style={{ background: spotlight }} className="absolute inset-0" />
+                {/* Small ambient glow */}
+
+                <div className="absolute left-1/2 top-1/2 size-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[var(--chart-4)]/[0.025] blur-[150px]" />
             </div>
 
-            {/* Scroll progress line */}
-            <motion.div
-                aria-hidden
-                style={{ scaleX: progress }}
-                className="absolute inset-x-0 top-0 z-30 h-[2px] origin-left bg-gradient-to-r from-[var(--chart-2)] via-gold to-[var(--chart-3)]"
-            />
-
+            {/* ======================================================
+          SECTION HEADING
+      ====================================================== */}
             <Container>
+
                 <SectionHeading
-                    label="About"
+                    label="About me"
                     title="Building with"
                     highlightedText="purpose & passion"
-                    description="I'm a Next.js full-stack developer from Pakistan focused on creating modern, scalable, and user-friendly digital experiences."
+                    description="A self-driven developer who learns by building real things."
                 />
 
-                {/* ============================================================
-                    INTRODUCTION + CODE WINDOW + STATS
-                ============================================================ */}
-                <div className="grid gap-5 lg:grid-cols-3">
-                    {/* Main Introduction */}
-                    <Reveal className="lg:col-span-2">
-                        <TiltCard className="h-full" intensity={4}>
-                            <GlowBorder className="h-full">
-                                <SpotlightCard className="group relative h-full overflow-hidden p-7 sm:p-9 lg:p-10">
-                                    {/* Decorative glows */}
-                                    <div className="pointer-events-none absolute -right-24 -top-24 size-64 rounded-full bg-[var(--chart-2)]/10 blur-3xl transition-opacity duration-700 group-hover:opacity-90" />
-                                    <div className="pointer-events-none absolute -bottom-24 -left-24 size-64 rounded-full bg-[var(--chart-3)]/10 blur-3xl transition-opacity duration-700 group-hover:opacity-90" />
 
-                                    {floatingChips.map((c) => (
-                                        <FloatingChip key={c.label} {...c} />
-                                    ))}
+                <div className="grid items-start gap-12 lg:grid-cols-2">
+                    {/* ====================================================
+            LEFT
+            Story + Values
+        ==================================================== */}
 
-                                    <div className="relative z-10 flex h-full flex-col justify-between">
-                                        <div>
-                                            <div className="mb-7 flex items-center justify-between gap-4">
-                                                <div className="flex items-center gap-3">
-                                                    <span className="relative flex size-2.5">
-                                                        <span className="absolute inline-flex size-full animate-ping rounded-full bg-gold opacity-50" />
-                                                        <span className="relative inline-flex size-2.5 rounded-full bg-gold" />
-                                                    </span>
+                    <div className="space-y-6">
+                        {/* --------------------------------------------------
+              ABOUT PARAGRAPHS
+          -------------------------------------------------- */}
 
-                                                    <span className="text-xs font-medium uppercase tracking-[0.2em] text-muted-foreground">
-                                                        A little about me
-                                                    </span>
-                                                </div>
+                        {ABOUT_PARAGRAPHS.map((paragraph, index) => (
+                            <Reveal
+                                key={index}
+                                delay={index * 0.08}
+                            >
+                                <p className="text-base leading-relaxed text-muted-foreground sm:text-lg">
+                                    {paragraph}
+                                </p>
+                            </Reveal>
+                        ))}
 
-                                                <span className="hidden rounded-full border border-border/70 bg-background/40 px-3 py-1 text-[11px] font-medium text-muted-foreground backdrop-blur sm:block">
-                                                    Next.js · Full-Stack
-                                                </span>
-                                            </div>
+                        {/* --------------------------------------------------
+              VALUES
+          -------------------------------------------------- */}
 
-                                            <ScrollFillText
-                                                className="max-w-4xl text-2xl font-medium leading-[1.35] tracking-tight sm:text-3xl lg:text-[2.15rem]"
-                                                text="I'm a Computer Science student from Pakistan who learned web development by building real things. I care about the details that make an app feel finished: spacing, typography, motion, accessibility and clear error handling. My goal is to turn an idea into a deployed, polished product."
-                                            />
-                                        </div>
-
-                                        {/* Principles */}
-                                        <motion.div
-                                            variants={staggerParent}
-                                            initial="hidden"
-                                            whileInView="show"
-                                            viewport={{ once: true, margin: "-60px" }}
-                                            className="mt-10 grid gap-4 border-t border-border/60 pt-5 sm:grid-cols-3"
-                                        >
-                                            {principles.map((p) => (
-                                                <motion.div
-                                                    key={p.k}
-                                                    variants={staggerChild}
-                                                    whileHover={reduce ? undefined : { y: -3 }}
-                                                    className="relative pl-4"
-                                                >
-                                                    <span className="absolute left-0 top-1 h-8 w-px bg-gradient-to-b from-gold to-transparent" />
-                                                    <p className="text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
-                                                        {p.k}
-                                                    </p>
-                                                    <p className="mt-1 text-sm font-medium">{p.v}</p>
-                                                </motion.div>
-                                            ))}
-                                        </motion.div>
-                                    </div>
-                                </SpotlightCard>
-                            </GlowBorder>
-                        </TiltCard>
-                    </Reveal>
-
-                    {/* Code Window */}
-                    <Reveal delay={0.1}>
-                        <TiltCard className="h-full" intensity={8}>
-                            <SpotlightCard className="group relative h-full min-h-[320px] overflow-hidden">
-                                <div className="pointer-events-none absolute -bottom-20 -right-20 size-52 rounded-full bg-[var(--chart-3)]/10 blur-3xl transition-opacity duration-700 group-hover:opacity-100" />
-
-                                <motion.div
-                                    className="relative h-full overflow-hidden rounded-3xl"
-                                    animate={reduce ? undefined : { y: [0, -5, 0] }}
-                                    transition={{
-                                        duration: 6,
-                                        repeat: Infinity,
-                                        ease: "easeInOut",
-                                    }}
+                        <div className="grid items-stretch gap-4 pt-4 sm:grid-cols-3">
+                            {VALUES.map((value, index) => (
+                                <Reveal
+                                    key={value.title}
+                                    delay={0.1 * index}
+                                    className="h-full"
                                 >
-                                    <CodeWindow />
-                                </motion.div>
-                            </SpotlightCard>
-                        </TiltCard>
-                    </Reveal>
+                                    <SpotlightCard className="flex h-full min-h-[190px] flex-col p-5">
+                                        <span className="grid size-10 shrink-0 place-items-center rounded-xl bg-primary/15 text-primary">
+                                            {(() => {
+                                                const ValueIcon = VALUE_ICONS[value.icon];
 
-                    {/* Stats */}
-                    {stats.map((s, i) => (
-                        <Reveal key={s.label} delay={0.15 + i * 0.08}>
-                            <TiltCard className="h-full" intensity={10}>
-                                <SpotlightCard className="group relative h-full overflow-hidden p-6 sm:p-7">
-                                    <div className="pointer-events-none absolute -right-10 -top-10 size-28 rounded-full bg-[var(--chart-2)]/10 blur-2xl transition-all duration-500 group-hover:scale-150 group-hover:bg-[var(--chart-3)]/15" />
+                                                return <ValueIcon className="size-5" />;
+                                            })()}
+                                        </span>
 
-                                    {/* Animated bottom bar */}
-                                    <span className="pointer-events-none absolute inset-x-0 bottom-0 h-[2px] origin-left scale-x-0 bg-gradient-to-r from-[var(--chart-2)] via-gold to-[var(--chart-3)] transition-transform duration-700 ease-out group-hover:scale-x-100" />
+                                        <h3 className="mt-4 text-sm font-semibold">
+                                            {value.title}
+                                        </h3>
 
-                                    <div className="relative">
-                                        <div className="mb-8 flex items-center justify-between">
-                                            <span className="text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">
-                                                Metric
-                                            </span>
-
-                                            <motion.span
-                                                className="size-2 rounded-full bg-gold/80 shadow-[0_0_12px_var(--primary)]"
-                                                animate={
-                                                    reduce
-                                                        ? undefined
-                                                        : { scale: [1, 1.5, 1], opacity: [0.8, 1, 0.8] }
-                                                }
-                                                transition={{
-                                                    duration: 2.4,
-                                                    delay: i * 0.3,
-                                                    repeat: Infinity,
-                                                }}
-                                            />
-                                        </div>
-
-                                        <div className="text-5xl font-semibold tracking-[-0.04em] text-gradient sm:text-6xl">
-                                            <Counter to={s.value} suffix={s.suffix} />
-                                        </div>
-
-                                        <p className="mt-3 max-w-[180px] text-sm leading-relaxed text-muted-foreground">
-                                            {s.label}
+                                        <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
+                                            {value.description}
                                         </p>
-                                    </div>
-                                </SpotlightCard>
-                            </TiltCard>
+                                    </SpotlightCard>
+                                </Reveal>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* ====================================================
+            RIGHT
+            Stats + Education
+        ==================================================== */}
+
+                    <div className="space-y-8">
+                        {/* --------------------------------------------------
+              STATS
+          -------------------------------------------------- */}
+
+                        <div className="grid grid-cols-2 gap-4">
+                            {STATS.map((stat, index) => (
+                                <Reveal key={stat.label} delay={0.08 * index}>
+                                    <SpotlightCard className="p-6 text-center">
+                                        <p className="text-gold text-4xl font-extrabold sm:text-5xl">
+                                            <Counter to={stat.value} suffix={stat.suffix} />
+                                        </p>
+                                        <p className="mt-2 text-xs text-muted-foreground sm:text-sm">{stat.label}</p>
+                                    </SpotlightCard>
+                                </Reveal>
+                            ))}
+                        </div>
+
+                        {/* --------------------------------------------------
+              EDUCATION
+          -------------------------------------------------- */}
+
+                        <Reveal delay={0.15}>
+                            <div className="glass relative overflow-hidden rounded-xl p-6 sm:p-8">
+                                {/* ==================================================
+                  CARD AMBIENT LIGHT
+              ================================================== */}
+
+                                <div
+                                    aria-hidden
+                                    className="pointer-events-none absolute -right-32 -top-32 size-72 rounded-full bg-[var(--chart-2)]/8 blur-[90px]"
+                                />
+
+                                <div
+                                    aria-hidden
+                                    className="pointer-events-none absolute -bottom-32 -left-32 size-72 rounded-full bg-[var(--chart-3)]/7 blur-[90px]"
+                                />
+
+                                {/* ==================================================
+                  EDUCATION HEADER
+              ================================================== */}
+
+                                <motion.h3
+                                    initial={{
+                                        opacity: 0,
+                                        x: -20,
+                                        filter: "blur(8px)",
+                                    }}
+                                    whileInView={{
+                                        opacity: 1,
+                                        x: 0,
+                                        filter: "blur(0px)",
+                                    }}
+                                    viewport={{
+                                        once: true,
+                                        margin: "-70px",
+                                    }}
+                                    transition={{
+                                        duration: 0.7,
+                                        ease: [0.22, 1, 0.36, 1],
+                                    }}
+                                    className="relative flex items-center gap-3 text-lg font-semibold"
+                                >
+                                    <motion.span
+                                        initial={{
+                                            scale: 0,
+                                            rotate: -20,
+                                        }}
+                                        whileInView={{
+                                            scale: 1,
+                                            rotate: 0,
+                                        }}
+                                        viewport={{
+                                            once: true,
+                                        }}
+                                        transition={{
+                                            duration: 0.65,
+                                            type: "spring",
+                                            stiffness: 180,
+                                            damping: 14,
+                                        }}
+                                        className="grid size-9 place-items-center rounded-xl bg-primary/10"
+                                    >
+                                        <GraduationCap className="size-5 text-gold" />
+                                    </motion.span>
+
+                                    Education
+                                </motion.h3>
+
+                                {/* ==================================================
+                  TIMELINE
+              ================================================== */}
+
+                                <EducationTimeline />
+                            </div>
                         </Reveal>
-                    ))}
+                    </div>
                 </div>
+
 
                 {/* ============================================================
                     SKILLS MARQUEE
@@ -455,42 +383,239 @@ export default function About() {
                         <SkillsMarquee />
                     </div>
                 </Reveal>
-
-                {/* ============================================================
-                    TIMELINE
-                ============================================================ */}
-                <div className="mt-20 sm:mt-24">
-                    <Reveal>
-                        <div className="mb-10 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-                            <div>
-                                <p className="text-xs font-medium uppercase tracking-[0.2em] text-gold">
-                                    My journey
-                                </p>
-
-                                <h3 className="mt-2 text-2xl font-semibold tracking-tight sm:text-3xl">
-                                    From learning to building
-                                </h3>
-
-                                <motion.span
-                                    initial={{ scaleX: 0 }}
-                                    whileInView={{ scaleX: 1 }}
-                                    viewport={{ once: true }}
-                                    transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
-                                    className="mt-3 block h-[2px] w-24 origin-left rounded-full bg-gradient-to-r from-gold to-transparent"
-                                />
-                            </div>
-
-                            <p className="max-w-md text-sm leading-relaxed text-muted-foreground sm:text-right">
-                                A continuous journey of learning, experimenting,
-                                building real projects, and becoming a better
-                                developer.
-                            </p>
-                        </div>
-                    </Reveal>
-
-                    <AboutTimeLine />
-                </div>
             </Container>
+
         </section>
+    );
+}
+
+
+
+/* ============================================================
+   PREMIUM EDUCATION TIMELINE
+============================================================ */
+
+function EducationTimeline() {
+    const timelineRef = useRef<HTMLDivElement>(null);
+
+    const { scrollYProgress } = useScroll({
+        target: timelineRef,
+        offset: ["start 0.78", "end 0.58"],
+    });
+
+    const progress = useSpring(scrollYProgress, {
+        stiffness: 100,
+        damping: 26,
+        mass: 0.4,
+    });
+
+    return (
+        <div
+            ref={timelineRef}
+            className="relative mt-8 pl-8"
+        >
+            {/* Straight base timeline line */}
+            <div
+                aria-hidden
+                className="absolute left-[6px] top-0 bottom-0 w-px bg-border/70"
+            />
+
+            {/* Straight animated timeline line */}
+            <motion.div
+                aria-hidden
+                style={{ scaleY: progress }}
+                className="absolute left-[5px] top-0 bottom-0 w-[2px] origin-top bg-primary"
+            />
+
+            {/* Education entries */}
+            <ol>
+                {EDUCATION.map((entry, index) => (
+                    <EducationItem
+                        key={entry.title}
+                        entry={entry}
+                        index={index}
+                    />
+                ))}
+            </ol>
+        </div>
+    );
+}
+/* ============================================================
+   EDUCATION ITEM
+============================================================ */
+
+function EducationItem({
+    entry,
+    index,
+}: {
+    entry: (typeof EDUCATION)[number];
+    index: number;
+}) {
+    return (
+        <Reveal
+            delay={index * 0.07}
+            className="group relative pb-9 last:pb-0"
+        >
+            {/* ==================================================
+                TIMELINE NODE
+            ================================================== */}
+
+            <motion.span
+                initial={{
+                    scale: 0,
+                    opacity: 0,
+                }}
+                whileInView={{
+                    scale: 1,
+                    opacity: 1,
+                }}
+                viewport={{
+                    once: true,
+                    margin: "-80px",
+                }}
+                transition={{
+                    duration: 0.45,
+                    delay: index * 0.07,
+                    type: "spring",
+                    stiffness: 240,
+                    damping: 18,
+                }}
+                className="absolute -left-[2rem] top-[5px] size-3 rounded-full border-2 border-background bg-primary ring-4 ring-primary/20"
+            >
+                <span className="size-[3px] rounded-full bg-background" />
+            </motion.span>
+
+            {/* ==================================================
+                PERIOD
+            ================================================== */}
+
+            <motion.div
+                initial={{
+                    opacity: 0,
+                    y: 8,
+                }}
+                whileInView={{
+                    opacity: 1,
+                    y: 0,
+                }}
+                viewport={{
+                    once: true,
+                    margin: "-80px",
+                }}
+                transition={{
+                    duration: 0.5,
+                    delay: 0.08 + index * 0.07,
+                    ease: [0.22, 1, 0.36, 1],
+                }}
+                className="inline-flex"
+            >
+                <Badge variant="gold">
+                    {entry.period}
+                </Badge>
+            </motion.div>
+
+            {/* ==================================================
+                TITLE
+            ================================================== */}
+
+            <motion.h4
+                initial={{
+                    opacity: 0,
+                    y: 8,
+                }}
+                whileInView={{
+                    opacity: 1,
+                    y: 0,
+                }}
+                viewport={{
+                    once: true,
+                    margin: "-80px",
+                }}
+                transition={{
+                    duration: 0.55,
+                    delay: 0.14 + index * 0.07,
+                    ease: [0.22, 1, 0.36, 1],
+                }}
+                className="mt-3 text-base font-semibold tracking-tight transition-colors duration-300 group-hover:text-[var(--primary)] sm:text-lg"
+            >
+                {entry.title}
+            </motion.h4>
+
+            {/* ==================================================
+                INSTITUTION
+            ================================================== */}
+
+            <motion.p
+                initial={{
+                    opacity: 0,
+                    y: 6,
+                }}
+                whileInView={{
+                    opacity: 1,
+                    y: 0,
+                }}
+                viewport={{
+                    once: true,
+                    margin: "-80px",
+                }}
+                transition={{
+                    duration: 0.5,
+                    delay: 0.19 + index * 0.07,
+                }}
+                className="mt-1 text-sm font-medium text-[var(--primary)]"
+            >
+                {entry.place}
+            </motion.p>
+
+            {/* ==================================================
+                DESCRIPTION
+            ================================================== */}
+
+            <motion.p
+                initial={{
+                    opacity: 0,
+                    y: 6,
+                }}
+                whileInView={{
+                    opacity: 1,
+                    y: 0,
+                }}
+                viewport={{
+                    once: true,
+                    margin: "-80px",
+                }}
+                transition={{
+                    duration: 0.55,
+                    delay: 0.24 + index * 0.07,
+                    ease: [0.22, 1, 0.36, 1],
+                }}
+                className="mt-1.5 max-w-xl text-sm leading-relaxed text-muted-foreground"
+            >
+                {entry.description}
+            </motion.p>
+
+        </Reveal>
+    );
+}
+/* ============================================================
+   VALUE ICON
+============================================================ */
+
+/*
+ * This keeps the old VALUES data completely unchanged.
+ *
+ * If your existing Icon component already handles all these
+ * names, you can simply use that component here instead.
+ */
+
+function ValueIcon({
+    name,
+}: {
+    name: string;
+}) {
+    return (
+        <span className="text-[13px] font-semibold">
+            {name.slice(0, 1).toUpperCase()}
+        </span>
     );
 }

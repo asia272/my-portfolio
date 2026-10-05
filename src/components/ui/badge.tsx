@@ -1,6 +1,28 @@
-import type { ComponentProps } from "react";
+import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-export function Badge({ className, ...props }: ComponentProps<"span">) {
-  return <span className={cn("inline-flex items-center rounded-full border border-border px-3 py-1 text-xs text-muted-foreground transition-colors hover:border-gold hover:text-gold", className)} {...props} />;
+interface BadgeProps {
+  children: ReactNode;
+  variant?: "purple" | "gold" | "muted";
+  className?: string;
+}
+
+const variants = {
+  purple: "border-primary/30 bg-primary/10 text-primary",
+  gold: "border-gold/40 bg-gold/10 text-gold-dark dark:text-gold",
+  muted: "border-border bg-muted/60 text-muted-foreground",
+};
+
+export function Badge({ children, variant = "purple", className }: BadgeProps) {
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium",
+        variants[variant],
+        className,
+      )}
+    >
+      {children}
+    </span>
+  );
 }
