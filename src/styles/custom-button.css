@@ -1,0 +1,419 @@
+/* ============================================================
+   PREMIUM CUSTOM BUTTON
+   Purple Base + Dual Gold Corner Hover
+============================================================ */
+
+.custom-btn {
+    position: relative;
+    isolation: isolate;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 50px;
+    padding: 0.88rem 1.55rem;
+
+    outline: none !important;
+
+    border: 1px solid color-mix(in srgb,
+            var(--primary) 75%,
+            transparent);
+
+    border-radius: 12px;
+
+    /* ========================================================
+       PURPLE BASE
+    ======================================================== */
+
+    background: linear-gradient(135deg,
+            var(--purple),
+            var(--primary));
+
+    color: #ffffff;
+
+    font-size: 16px;
+    line-height: 16px;
+    font-weight: 600;
+    text-transform: capitalize;
+
+    overflow: hidden;
+    cursor: pointer;
+    z-index: 1;
+
+    transition:
+        transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+        box-shadow 0.45s ease,
+        border-color 0.35s ease,
+        color 0.3s ease;
+}
+
+
+/* ============================================================
+   TOP-LEFT GOLD LAYER
+============================================================ */
+
+.custom-btn::before {
+    position: absolute;
+    content: "";
+
+    top: 0;
+    left: 0;
+
+    width: 52%;
+    height: 0;
+
+    background: linear-gradient(135deg,
+            var(--gold),
+            var(--gold-light));
+
+    opacity: 0;
+    visibility: hidden;
+
+    z-index: -1;
+
+    border-radius: 0 0 55% 0;
+
+    transform-origin: top left;
+
+    transition:
+        width 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+        height 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 0.3s ease,
+        visibility 0s linear 0.3s,
+        border-radius 0.55s ease;
+}
+
+
+/* ============================================================
+   BOTTOM-RIGHT GOLD LAYER
+============================================================ */
+
+.custom-btn::after {
+    position: absolute;
+    content: "";
+
+    right: 0;
+    bottom: 0;
+
+    width: 52%;
+    height: 0;
+
+    background: linear-gradient(315deg,
+            var(--gold),
+            var(--gold-light));
+
+    opacity: 0;
+    visibility: hidden;
+
+    z-index: -1;
+
+    border-radius: 55% 0 0 0;
+
+    transform-origin: bottom right;
+
+    transition:
+        width 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+        height 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 0.3s ease,
+        visibility 0s linear 0.3s,
+        border-radius 0.55s ease;
+}
+
+
+/* ============================================================
+   HOVER
+============================================================ */
+
+.custom-btn:hover {
+    color: #111111;
+
+    transform: translateY(-3px);
+
+    border-color: color-mix(in srgb,
+            var(--gold) 90%,
+            transparent);
+}
+
+
+/* ============================================================
+   TOP-LEFT GOLD EXPANSION
+============================================================ */
+
+.custom-btn:hover::before {
+    width: 100%;
+    height: 100%;
+
+    opacity: 1;
+    visibility: visible;
+
+    border-radius: 0;
+
+    transition:
+        width 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+        height 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 0.3s ease,
+        visibility 0s,
+        border-radius 0.55s ease;
+}
+
+
+/* ============================================================
+   BOTTOM-RIGHT GOLD EXPANSION
+============================================================ */
+
+.custom-btn:hover::after {
+    width: 100%;
+    height: 100%;
+
+    opacity: 1;
+    visibility: visible;
+
+    border-radius: 0;
+
+    transition:
+        width 0.65s cubic-bezier(0.22, 1, 0.36, 1),
+        height 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 0.3s ease,
+        visibility 0s,
+        border-radius 0.55s ease;
+}
+
+
+/* ============================================================
+   FOCUS
+============================================================ */
+
+.custom-btn:focus-visible {
+    outline: 2px solid color-mix(in srgb,
+            var(--primary) 75%,
+            transparent) !important;
+
+    outline-offset: 4px;
+}
+
+
+/* ============================================================
+   DISABLED
+============================================================ */
+
+.custom-btn:disabled,
+.custom-btn[aria-disabled="true"] {
+    cursor: not-allowed;
+    pointer-events: none;
+
+    opacity: 0.55;
+
+    transform: none;
+
+    box-shadow: none;
+}
+
+
+/* ============================================================
+   RESPONSIVE
+============================================================ */
+
+@media (max-width: 640px) {
+    .custom-btn {
+        width: 100%;
+        min-height: 48px;
+
+        padding: 0.82rem 1.3rem;
+
+        font-size: 15px;
+    }
+}
+
+
+/* ============================================================
+   REDUCED MOTION
+============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .custom-btn,
+    .custom-btn::before,
+    .custom-btn::after {
+        transition: none;
+    }
+
+    .custom-btn:hover {
+        transform: none;
+    }
+}
+
+
+
+/* ============================================================
+   PREMIUM OUTLINE BUTTON
+   Transparent Base + Purple Border + Gold Hover
+============================================================ */
+
+.custom-btn-outline {
+    position: relative;
+    isolation: isolate;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+
+    min-height: 50px;
+    padding: 0.88rem 1.55rem;
+
+    outline: none !important;
+
+    border: 1px solid color-mix(in srgb,
+            var(--primary) 55%,
+            transparent);
+
+    border-radius: 12px;
+
+    background: color-mix(in srgb,
+            var(--primary) 5%,
+            transparent);
+
+    color: var(--foreground);
+
+    font-size: 16px;
+    line-height: 16px;
+    font-weight: 600;
+    text-transform: capitalize;
+
+    overflow: hidden;
+    cursor: pointer;
+    z-index: 1;
+
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
+    transition:
+        transform 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+        background-color 0.35s ease,
+        border-color 0.35s ease,
+        color 0.3s ease,
+        box-shadow 0.45s ease;
+}
+
+
+/* ============================================================
+   GOLD HOVER LAYER
+============================================================ */
+
+.custom-btn-outline::before {
+    position: absolute;
+    content: "";
+
+    inset: 0;
+
+    background: linear-gradient(135deg,
+            var(--gold),
+            var(--gold-light));
+
+    opacity: 0;
+
+    transform: scaleX(0);
+    transform-origin: left center;
+
+    z-index: -1;
+
+    transition:
+        transform 0.55s cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 0.3s ease;
+}
+
+
+/* ============================================================
+   HOVER
+============================================================ */
+
+.custom-btn-outline:hover {
+    color: #111111;
+
+    transform: translateY(-3px);
+
+    border-color: color-mix(in srgb,
+            var(--gold) 90%,
+            transparent);
+
+    background: transparent;
+
+    box-shadow:
+        0 10px 30px color-mix(in srgb,
+            var(--gold) 14%,
+            transparent);
+}
+
+
+/* ============================================================
+   GOLD EXPANSION
+============================================================ */
+
+.custom-btn-outline:hover::before {
+    opacity: 1;
+    transform: scaleX(1);
+}
+
+
+/* ============================================================
+   FOCUS
+============================================================ */
+
+.custom-btn-outline:focus-visible {
+    outline: 2px solid color-mix(in srgb,
+            var(--primary) 75%,
+            transparent) !important;
+
+    outline-offset: 4px;
+}
+
+
+/* ============================================================
+   DISABLED
+============================================================ */
+
+.custom-btn-outline:disabled,
+.custom-btn-outline[aria-disabled="true"] {
+    cursor: not-allowed;
+    pointer-events: none;
+
+    opacity: 0.55;
+
+    transform: none;
+
+    box-shadow: none;
+}
+
+
+/* ============================================================
+   RESPONSIVE
+============================================================ */
+
+@media (max-width: 640px) {
+    .custom-btn-outline {
+        width: 100%;
+        min-height: 48px;
+
+        padding: 0.82rem 1.3rem;
+
+        font-size: 15px;
+    }
+}
+
+
+/* ============================================================
+   REDUCED MOTION
+============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .custom-btn-outline,
+    .custom-btn-outline::before {
+        transition: none;
+    }
+
+    .custom-btn-outline:hover {
+        transform: none;
+    }
+}

@@ -1,0 +1,7 @@
+.text-gradient { background-image: var(--gradient); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.text-gold-gradient { background-image: var(--gold-gradient); -webkit-background-clip: text; background-clip: text; color: transparent; }
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+@media (hover: hover) and (pointer: fine) {
+  body.has-cursor, body.has-cursor a, body.has-cursor button, body.has-cursor input, body.has-cursor textarea { cursor: none; }
+}

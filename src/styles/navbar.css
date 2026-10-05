@@ -1,0 +1,154 @@
+/* ============================================================
+   NAVBAR
+============================================================ */
+
+.nav-link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+
+    color: var(--muted-foreground);
+
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+    font-weight: 500;
+
+    text-decoration: none;
+
+    transition:
+        color 0.3s ease,
+        transform 0.3s ease;
+}
+
+/* Animated underline */
+.nav-link::after {
+    content: "";
+
+    position: absolute;
+    left: 50%;
+    bottom: 2px;
+
+    width: 0;
+    height: 2px;
+
+    border-radius: 999px;
+
+    background: var(--primary);
+
+    opacity: 0;
+    transform: translateX(-50%) scaleX(0);
+
+    box-shadow:
+        0 0 8px color-mix(in srgb,
+            var(--primary) 35%,
+            transparent);
+
+    transition:
+        width 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 0.3s ease;
+}
+
+.nav-link:hover {
+    color: var(--foreground);
+}
+
+.nav-link:hover::after {
+    width: 70%;
+    opacity: 1;
+    transform: translateX(-50%) scaleX(1);
+}
+
+/* Active / current page */
+.nav-link.active {
+    color: var(--foreground);
+}
+
+.nav-link.active::after {
+    width: 70%;
+    opacity: 1;
+    transform: translateX(-50%) scaleX(1);
+}
+
+/* ============================================================
+   MOBILE NAV LINKS
+============================================================ */
+
+.mobile-nav-link {
+    position: relative;
+    display: flex;
+    align-items: center;
+
+    padding: 0.75rem 0;
+
+    color: var(--muted-foreground);
+
+    font-size: 0.9375rem;
+    font-weight: 500;
+
+    text-decoration: none;
+
+    transition:
+        color 0.3s ease,
+        padding-left 0.3s ease;
+}
+
+.mobile-nav-link::after {
+    content: "";
+
+    position: absolute;
+    left: 0;
+    bottom: 2px;
+
+    width: 0;
+    height: 2px;
+
+    border-radius: 999px;
+
+    background: var(--primary);
+
+    opacity: 0;
+
+    box-shadow:
+        0 0 8px color-mix(in srgb,
+            var(--primary) 35%,
+            transparent);
+
+    transition:
+        width 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 0.3s ease;
+}
+
+.mobile-nav-link:hover {
+    color: var(--foreground);
+    padding-left: 0.25rem;
+}
+
+.mobile-nav-link:hover::after {
+    width: 55px;
+    opacity: 1;
+}
+
+.mobile-nav-link.active {
+    color: var(--foreground);
+}
+
+.mobile-nav-link.active::after {
+    width: 55px;
+    opacity: 1;
+}
+
+/* ============================================================
+   REDUCED MOTION
+============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .nav-link,
+    .nav-link::after,
+    .mobile-nav-link,
+    .mobile-nav-link::after {
+        transition: none;
+    }
+}
