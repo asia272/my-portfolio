@@ -127,6 +127,7 @@ export const PROJECTS: Project[] = [
         accent: "purple",
         status: "Completed",
         featured: true,
+        image: "/images/projects/my-project.png",
     },
     {
         title: "WhatsApp-Style Chat App",
@@ -137,6 +138,7 @@ export const PROJECTS: Project[] = [
         icon: "message",
         accent: "gold",
         status: "Completed",
+        image: "/images/projects/my-project.png",
     },
     {
         title: "Custom Authentication System",
@@ -151,6 +153,7 @@ export const PROJECTS: Project[] = [
         icon: "shield",
         accent: "mixed",
         status: "Completed",
+        image: "/images/projects/my-project.png",
     },
     {
         title: "Full-Stack Portfolio & Admin Dashboard",
@@ -165,6 +168,7 @@ export const PROJECTS: Project[] = [
         icon: "sparkles",
         accent: "purple",
         status: "In progress",
+        image: "/images/projects/my-project.png",
     },
 ];
 
