@@ -13,6 +13,7 @@ import { useRef } from "react";
 import {
     ABOUT_PARAGRAPHS,
     EDUCATION,
+    MARQUEE_TECH,
     STATS,
     VALUES,
 } from "@/data/portfolio";
@@ -35,24 +36,11 @@ import {
    ABOUT
 ============================================================ */
 
-const skills = [
-    "Next.js",
-    "React",
-    "TypeScript",
-    "Tailwind CSS",
-    "Node.js",
-    "MongoDB",
-    "PostgreSQL",
-    "Prisma",
-    "Framer Motion",
-    "REST APIs",
-    "Auth",
-    "Vercel",
-];
+
 /** Infinite horizontal marquee of skill pills */
 function SkillsMarquee() {
     const reduce = useReducedMotion();
-    const items = [...skills, ...skills];
+    const items = [...MARQUEE_TECH, ...MARQUEE_TECH];
 
     return (
         <div

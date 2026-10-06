@@ -5,6 +5,7 @@ import Navbar from "@/components/layout/Navbar";
 // import { Contact, Footer, Process, Projects, ScrollBand, Services } from "@/components/sections";
 import About from "@/components/section/About";
 import { Skills } from "@/components/section/Skills";
+import { Services } from "@/components/section/Services";
 
 
 export default function Home() {
@@ -15,11 +16,8 @@ export default function Home() {
         <Hero />
         <About />
         <Skills />
-        {/* <ScrollBand />
-        <Projects />
-        <Process />
+        {/* <Projects/> */}
         <Services />
-        <Contact /> */}
       </main>
       {/* <Footer /> */}
 

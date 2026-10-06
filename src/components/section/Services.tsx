@@ -1,100 +1,314 @@
-// import {
-//     ArrowUpRight,
-//     Code2,
-//     Database,
-//     LayoutTemplate,
-//     MonitorCog,
-//     Server,
-//     Wrench,
-// } from "lucide-react";
+// import { PROCESS, SERVICES } from "@/data/portfolio";
+// import { Icon } from "@/components/ui/Icon";
+// import { Reveal, SpotlightCard } from "../animations/animations";
+// import SectionHeading from "../common/SectionHeading";
+// import Container from "../common/Container";
 
-// import Container from "@/components/common/Container";
-// import SectionHeading from "@/components/common/SectionHeading";
-// import { services } from "@/data/services";
 
-// const serviceIcons = {
-//     "web-development": LayoutTemplate,
-//     "full-stack-development": Code2,
-//     "frontend-development": MonitorCog,
-//     "backend-development": Server,
-//     "ui-ux-implementation": Database,
-//     "website-maintenance": Wrench,
-// };
 
-// export default function Services() {
+
+
+// export function Services() {
 //     return (
-//         <section id="services" className="section">
+//         <section id="services" className="section bg-secondary/40">
 //             <Container>
 //                 <SectionHeading
-//                     eyebrow="Services"
-//                     title="Solutions built around your goals."
-//                     description="From responsive interfaces to complete full-stack applications, I focus on building practical digital experiences that are reliable, scalable and easy to use."
+//                     label="Services"
+//                     title="How I can"
+//                     highlightedText="help you"
+//                     description="From a single polished interface to a complete product, built with care."
 //                 />
 
-//                 <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-//                     {services.map((service, index) => {
-//                         const Icon = serviceIcons[service.id as keyof typeof serviceIcons];
+//                 <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+//                     {SERVICES.map((service, index) => (
+//                         <Reveal key={service.title} delay={0.08 * index}>
+//                             <SpotlightCard className="p-6">
+//                                 <span className="grid size-12 place-items-center rounded-2xl bg-[image:var(--gold-gradient)] text-[#1b1305] shadow-lg shadow-gold/30">
+//                                     <Icon name={service.icon} className="size-6" />
+//                                 </span>
+//                                 <h3 className="mt-5 text-lg font-semibold">{service.title}</h3>
+//                                 <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+//                                     {service.description}
+//                                 </p>
+//                             </SpotlightCard>
+//                         </Reveal>
+//                     ))}
+//                 </div>
 
-//                         return (
-//                             <article
-//                                 key={service.id}
-//                                 className="group relative overflow-hidden rounded-2xl border border-border bg-card/50 p-6 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1.5 hover:border-primary/30 hover:bg-primary/[0.025] hover:shadow-xl hover:shadow-primary/5"
-//                                 data-aos="fade-up"
-//                                 data-aos-delay={(index % 3) * 80}
-//                             >
-//                                 {/* Hover glow */}
-//                                 <div className="pointer-events-none absolute -right-16 -top-16 size-32 rounded-full bg-primary/10 opacity-0 blur-3xl transition-opacity duration-500 group-hover:opacity-100" />
+//                 {/* Process */}
+//                 <div className="mt-20">
+//                     <Reveal>
+//                         <h3 className="mb-10 text-center text-2xl font-bold sm:text-3xl">
+//                             My <span className="text-gradient">process</span>
+//                         </h3>
+//                     </Reveal>
 
-//                                 <div className="relative">
-//                                     {/* Icon + number */}
-//                                     <div className="flex items-start justify-between">
-//                                         <div className="flex size-12 items-center justify-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/10 transition-all duration-300 group-hover:bg-primary/15 group-hover:ring-primary/20">
-//                                             <Icon className="size-5" />
-//                                         </div>
-
-//                                         <span className="text-xs font-semibold tracking-widest text-muted-foreground/50">
-//                                             {String(index + 1).padStart(2, "0")}
-//                                         </span>
-//                                     </div>
-
-//                                     {/* Content */}
-//                                     <h3 className="mt-6 text-xl font-semibold tracking-tight">
-//                                         {service.title}
-//                                     </h3>
-
-//                                     <p className="mt-3 text-sm leading-7 text-muted-foreground">
-//                                         {service.description}
+//                     <ol className="relative grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+//                         <div
+//                             aria-hidden
+//                             className="absolute top-7 right-[12.5%] left-[12.5%] hidden h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent lg:block"
+//                         />
+//                         {PROCESS.map((step, index) => (
+//                             <li key={step.title} className="relative text-center">
+//                                 <Reveal delay={0.1 * index}>
+//                                     <span className="relative mx-auto grid size-14 place-items-center rounded-full border border-primary/40 bg-background text-lg font-bold text-gold ring-8 ring-secondary/40">
+//                                         {index + 1}
+//                                     </span>
+//                                     <h4 className="mt-4 font-semibold">{step.title}</h4>
+//                                     <p className="mx-auto mt-1.5 max-w-[16rem] text-sm leading-relaxed text-muted-foreground">
+//                                         {step.description}
 //                                     </p>
-
-//                                     {/* Features */}
-//                                     <ul className="mt-6 space-y-2.5">
-//                                         {service.features.map((feature) => (
-//                                             <li
-//                                                 key={feature}
-//                                                 className="flex items-center gap-2.5 text-sm text-muted-foreground"
-//                                             >
-//                                                 <span className="size-1.5 shrink-0 rounded-full bg-primary/70" />
-//                                                 {feature}
-//                                             </li>
-//                                         ))}
-//                                     </ul>
-
-//                                     {/* Bottom */}
-//                                     <div className="mt-7 flex items-center justify-between border-t border-border/70 pt-5">
-//                                         <span className="text-xs font-medium uppercase tracking-[0.15em] text-muted-foreground">
-//                                             Learn more
-//                                         </span>
-
-//                                         <div className="flex size-8 items-center justify-center rounded-full border border-border text-muted-foreground transition-all duration-300 group-hover:border-primary/30 group-hover:bg-primary/10 group-hover:text-primary">
-//                                             <ArrowUpRight className="size-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-//                                         </div>
-//                                     </div>
-//                                 </div>
-//                             </article>
-//                         );
-//                     })}
+//                                 </Reveal>
+//                             </li>
+//                         ))}
+//                     </ol>
 //                 </div>
 //             </Container>
+
 //         </section>
 //     );
 // }
+"use client";
+
+import { motion, useInView } from "motion/react";
+import { useRef } from "react";
+
+import { PROCESS, SERVICES } from "@/data/portfolio";
+import { Icon } from "@/components/ui/Icon";
+import { Reveal, SpotlightCard } from "../animations/animations";
+import SectionHeading from "../common/SectionHeading";
+import Container from "../common/Container";
+
+const EASE = [0.22, 1, 0.36, 1] as const;
+
+function ProcessTimelineLine() {
+    const lineRef = useRef<HTMLDivElement>(null);
+    const isInView = useInView(lineRef, {
+        once: true,
+        margin: "-100px",
+    });
+
+    return (
+        <div
+            ref={lineRef}
+            aria-hidden
+            className="pointer-events-none absolute top-7 right-[12.5%] left-[12.5%] hidden h-px lg:block"
+        >
+            {/* Base line */}
+            {/* <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/20 to-transparent" /> */}
+
+            {/* Animated line */}
+            <motion.div
+                className="absolute inset-y-0 left-0 w-full origin-left bg-primary"
+                initial={{ scaleX: 0, opacity: 0 }}
+                animate={
+                    isInView
+                        ? {
+                            scaleX: 1,
+                            opacity: 1,
+                        }
+                        : {
+                            scaleX: 0,
+                            opacity: 0,
+                        }
+                }
+                transition={{
+                    scaleX: {
+                        duration: 1.6,
+                        ease: EASE,
+                    },
+                    opacity: {
+                        duration: 0.35,
+                        ease: "easeOut",
+                    },
+                }}
+            />
+
+            {/* Moving highlight */}
+            {/* <motion.div
+                className="absolute top-1/2 left-0 h-[3px] w-20 -translate-y-1/2 rounded-full bg-gold"
+                initial={{
+                    x: "-100%",
+                    opacity: 0,
+                }}
+                animate={
+                    isInView
+                        ? {
+                            x: ["-100%", "calc(100% - 5rem)"],
+                            opacity: [0, 1, 0],
+                        }
+                        : {
+                            x: "-100%",
+                            opacity: 0,
+                        }
+                }
+                transition={{
+                    duration: 1.8,
+                    delay: 1.05,
+                    ease: "easeInOut",
+                }}
+            /> */}
+        </div>
+    );
+}
+
+export function Services() {
+    return (
+        <section id="services" className="section bg-secondary/40">
+            <Container>
+                <SectionHeading
+                    label="Services"
+                    title="How I can"
+                    highlightedText="help you"
+                    description="From a single polished interface to a complete product, built with care."
+                />
+
+                {/* Services */}
+                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                    {SERVICES.map((service, index) => (
+                        <Reveal
+                            key={service.title}
+                            delay={0.08 * index}
+                            className="h-full"
+                        >
+                            <SpotlightCard className="h-full p-6">
+                                <motion.span
+                                    className="grid size-12 place-items-center rounded-2xl bg-[image:var(--gold-gradient)] text-[#1b1305] shadow-lg shadow-gold/30"
+                                    whileHover={{
+                                        scale: 1.06,
+                                        rotate: -3,
+                                    }}
+                                    transition={{
+                                        type: "spring",
+                                        stiffness: 320,
+                                        damping: 18,
+                                    }}
+                                >
+                                    <Icon
+                                        name={service.icon}
+                                        className="size-6"
+                                    />
+                                </motion.span>
+
+                                <h3 className="mt-5 text-lg font-semibold">
+                                    {service.title}
+                                </h3>
+
+                                <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                                    {service.description}
+                                </p>
+                            </SpotlightCard>
+                        </Reveal>
+                    ))}
+                </div>
+
+                {/* Process */}
+                <div className="mt-20">
+                    <Reveal>
+                        <h3 className="mb-10 text-center text-2xl font-bold sm:text-3xl">
+                            My{" "}
+                            <span className="text-gradient">
+                                process
+                            </span>
+                        </h3>
+                    </Reveal>
+
+                    <ol className="relative grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+                        {/* Animated connecting timeline */}
+                        <ProcessTimelineLine />
+
+                        {PROCESS.map((step, index) => (
+                            <li
+                                key={step.title}
+                                className="relative text-center"
+                            >
+                                <Reveal delay={0.15 + 0.12 * index}>
+                                    {/* Number */}
+                                    <motion.span
+                                        className="relative z-10 mx-auto grid size-14 place-items-center rounded-full border border-primary/40 bg-background text-lg font-bold text-gold ring-8 ring-secondary/40"
+                                        initial={{
+                                            opacity: 0,
+                                            scale: 0.7,
+                                            y: 10,
+                                        }}
+                                        whileInView={{
+                                            opacity: 1,
+                                            scale: 1,
+                                            y: 0,
+                                        }}
+                                        viewport={{
+                                            once: true,
+                                            margin: "-80px",
+                                        }}
+                                        transition={{
+                                            duration: 0.65,
+                                            delay:
+                                                0.25 +
+                                                0.14 * index,
+                                            ease: EASE,
+                                        }}
+                                        whileHover={{
+                                            scale: 1.08,
+                                        }}
+                                    >
+                                        {index + 1}
+                                    </motion.span>
+
+                                    <motion.h4
+                                        className="mt-4 font-semibold"
+                                        initial={{
+                                            opacity: 0,
+                                            y: 12,
+                                        }}
+                                        whileInView={{
+                                            opacity: 1,
+                                            y: 0,
+                                        }}
+                                        viewport={{
+                                            once: true,
+                                            margin: "-80px",
+                                        }}
+                                        transition={{
+                                            duration: 0.65,
+                                            delay:
+                                                0.35 +
+                                                0.14 * index,
+                                            ease: EASE,
+                                        }}
+                                    >
+                                        {step.title}
+                                    </motion.h4>
+
+                                    <motion.p
+                                        className="mx-auto mt-1.5 max-w-[16rem] text-sm leading-relaxed text-muted-foreground"
+                                        initial={{
+                                            opacity: 0,
+                                            y: 10,
+                                        }}
+                                        whileInView={{
+                                            opacity: 1,
+                                            y: 0,
+                                        }}
+                                        viewport={{
+                                            once: true,
+                                            margin: "-80px",
+                                        }}
+                                        transition={{
+                                            duration: 0.65,
+                                            delay:
+                                                0.45 +
+                                                0.14 * index,
+                                            ease: EASE,
+                                        }}
+                                    >
+                                        {step.description}
+                                    </motion.p>
+                                </Reveal>
+                            </li>
+                        ))}
+                    </ol>
+                </div>
+            </Container>
+        </section>
+    );
+}

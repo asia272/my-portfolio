@@ -42,7 +42,7 @@ export default function SectionHeading({
     return (
         <div
             className={cn(
-                "mb-8 w-full",
+                "mb-6 w-full sm:mb-10 lg:mb-14",
                 maxWidth,
                 isCenter ? "mx-auto text-center" : "text-start",
                 className

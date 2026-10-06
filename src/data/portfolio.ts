@@ -1,12 +1,10 @@
 import type {
     Education,
-    NavLink,
     ProcessStep,
     Project,
     Service,
     SkillGroup,
-    Stat,
-    Testimonial,
+    Stat
 } from "@/types";
 
 /* ------------------------------------------------------------------
@@ -249,21 +247,3 @@ export const VALUES = [
     },
 ] as const;
 
-/**
- * Add real testimonials here once you have them — the section (and its nav
- * link) appears automatically. While the list is empty it stays hidden, so
- * no placeholder reviews are ever shown.
- *
- * { name: "Client Name", role: "Founder, Company", quote: "..." }
- */
-export const TESTIMONIALS: Testimonial[] = [];
-
-export const NAV_LINKS: NavLink[] = [
-    { label: "Home", href: "#home" },
-    { label: "About", href: "#about" },
-    { label: "Skills", href: "#skills" },
-    { label: "Projects", href: "#projects" },
-    { label: "Services", href: "#services" },
-    ...(TESTIMONIALS.length > 0 ? [{ label: "Testimonials", href: "#testimonials" }] : []),
-    { label: "Contact", href: "#contact" },
-];

@@ -317,7 +317,8 @@ export function Skills() {
             <Container>
                 <SectionHeading
                     label="Skills & Technologies"
-                    title="Technologies I use to turn ideas into products."
+                    title="Technologies I use to"
+                    highlightedText=" turn ideas into products."
                     description="A practical toolkit built through continuous learning, experimentation and real-world projects."
                     align="start"
                 />
