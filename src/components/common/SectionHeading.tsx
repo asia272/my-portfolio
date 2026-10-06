@@ -3,6 +3,7 @@
 import Link from "next/link";
 
 import { cn } from "@/lib/utils";
+import { Reveal, SplitText } from "../animations/animations";
 
 interface SectionHeadingProps {
     breadcrumb?: string;
@@ -84,15 +85,16 @@ export default function SectionHeading({
 
             {/* Label */}
             {label && (
-                <div className="mb-5 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-gold-dark">
-                    <span className="h-px w-7 bg-gold-dark/70" />
+                <Reveal delay={0.05}>
+                    <div className="mb-5 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.2em] text-gold-dark">
+                        <span className="h-px w-7 bg-gold-dark/70" />
 
-                    <span>{label}</span>
+                        <span>{label}</span>
 
-                    <span className="h-px w-7 bg-gold-dark/70" />
-                </div>
+                        <span className="h-px w-7 bg-gold-dark/70" />
+                    </div>
+                </Reveal>
             )}
-
             {/* Title */}
             <h1
                 className={cn(
@@ -105,28 +107,32 @@ export default function SectionHeading({
                     letterSpacing,
                 }}
             >
-                {title}
+                {/* {title} */}
+                <SplitText text={title} />
 
                 {highlightedText && (
                     <>
-                        {" "}
-                        <span className="font-medium tracking-tight text-primary">
-                            {highlightedText}
-                        </span>
+
+                        <SplitText
+                            text={highlightedText}
+                            className="font-medium tracking-tight text-primary"
+                        />
                     </>
                 )}
             </h1>
 
             {/* Description */}
             {description && (
-                <p
-                    className={cn(
-                        "mt-3 max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg sm:leading-8",
-                        isCenter ? "mx-auto" : "mx-0"
-                    )}
-                >
-                    {description}
-                </p>
+                <Reveal delay={0.35}>
+                    <p
+                        className={cn(
+                            "mt-3 max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg sm:leading-8",
+                            isCenter ? "mx-auto" : "mx-0"
+                        )}
+                    >
+                        {description}
+                    </p>
+                </Reveal>
             )}
         </div>
     );

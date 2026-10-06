@@ -6,6 +6,8 @@ import Navbar from "@/components/layout/Navbar";
 import About from "@/components/section/About";
 import { Skills } from "@/components/section/Skills";
 import { Services } from "@/components/section/Services";
+import Projects from "@/components/section/Projects";
+
 
 
 export default function Home() {
@@ -16,7 +18,9 @@ export default function Home() {
         <Hero />
         <About />
         <Skills />
-        {/* <Projects/> */}
+        {/* <Projects /> */}
+        <Projects />
+
         <Services />
       </main>
       {/* <Footer /> */}

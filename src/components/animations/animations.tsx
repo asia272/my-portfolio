@@ -24,7 +24,7 @@ export function SplitText({ text, className, delay = 0, now = false }: { text: s
     <motion.span className={className} aria-label={text} initial="hidden" {...trigger} transition={{ staggerChildren: 0.035, delayChildren: delay }}>
       {text.split(" ").map((w, wi) => (
         <span key={wi} aria-hidden className="inline-block whitespace-nowrap pr-[0.28em] [perspective:600px]">
-          <span className="inline-block overflow-hidden pb-[0.12em] align-bottom">
+          <span className="inline-block overflow-hidden  align-bottom">
             {w.split("").map((c) => (
               <motion.span key={n++} className="inline-block origin-bottom" variants={{ hidden: { y: "115%", rotateX: -70, opacity: 0 }, show: { y: 0, rotateX: 0, opacity: 1, transition: { duration: 1, ease: EASE } } }}>
                 {c}
