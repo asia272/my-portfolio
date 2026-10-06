@@ -1,124 +1,382 @@
 @import "tailwindcss";
+
 @import "../styles/custom-button.css";
 @import "../styles/navbar.css";
 
+/* ============================================================
+   THEME CONFIGURATION
+============================================================ */
+
 @custom-variant dark (&:is(.dark *));
+
+
+/* ============================================================
+   ROOT VARIABLES — LIGHT MODE
+============================================================ */
 
 :root {
   --background: #f9f9f9;
   --foreground: #111111;
-  --gradient: linear-gradient(135deg, var(--primary), var(--purple-light));
+
+  /* Existing purple gradient */
+  --gradient: linear-gradient(135deg,
+      var(--primary),
+      var(--purple-light));
+
+  /* Existing primary */
   --primary: #c53fad;
   --primary-foreground: #ffffff;
+
   --secondary: #f1eaf3;
   --secondary-foreground: #111111;
+
   --muted: #eee9ef;
   --muted-foreground: #666666;
+
   --card: #ffffff;
   --card-foreground: #111111;
+
   --popover: #ffffff;
   --popover-foreground: #111111;
+
   --border: #e0dae2;
   --input: #e0dae2;
   --ring: #a200a2;
+
+
+  /* ==========================================================
+     PORTFOLIO COLORS
+  ========================================================== */
+
   --nav-bg: #ffffff;
+
+  /* Existing purple */
   --purple: #802097;
   --purple-light: #c53fad;
+
+  /* NEW — Gold accent only */
   --gold: #d4a017;
   --gold-light: #f5c95c;
   --gold-dark: #a87900;
-  --gold-gradient: linear-gradient(135deg, #d4a017 0%, #f5c95c 100%);
+
+  /* Gold button gradient */
+  --gold-gradient: linear-gradient(135deg,
+      #d4a017 0%,
+      #f5c95c 100%);
+
+
+  /* Existing */
   --skill-bg: #ffffff;
   --skill-shadow: #e0dae2;
+
   --about-overlay-bg: rgba(162, 0, 162, 0.15);
+
   --selection-bg: rgba(162, 0, 162, 0.2);
+
   --container-width: 1280px;
   --nav-height: 76px;
+
   --radius: 0.75rem;
 }
+
+
+/* ============================================================
+   DARK MODE
+============================================================ */
 
 .dark {
   --background: rgb(13, 8, 20);
   --foreground: #ffffff;
+
+  /* Existing purple primary */
   --primary: #c53fad;
   --primary-foreground: #ffffff;
-  --gradient: linear-gradient(135deg, var(--primary), var(--purple-light));
-  --gradient-gold: linear-gradient(135deg, #f5b942 0%, #ffd36a 100%);
+
+  /* Existing purple gradient */
+  --gradient: linear-gradient(135deg,
+      var(--primary),
+      var(--purple-light));
+
+  /* Optional gold gradient */
+  --gradient-gold: linear-gradient(135deg,
+      #f5b942 0%,
+      #ffd36a 100%);
+
+
   --secondary: rgb(33, 19, 51);
   --secondary-foreground: #ffffff;
+
   --muted: rgb(33, 19, 51);
   --muted-foreground: #b9adbf;
+
   --card: rgb(25, 14, 38);
   --card-foreground: #ffffff;
+
   --popover: #0b0711;
   --popover-foreground: #ffffff;
+
+  /* Existing purple borders */
   --border: rgba(128, 32, 151, 0.35);
   --input: rgba(128, 32, 151, 0.35);
+
   --ring: #c53fad;
+
+
+  /* ==========================================================
+     PORTFOLIO COLORS
+  ========================================================== */
+
   --nav-bg: #0b0711;
+
+  /* Existing purple */
   --purple: #802097;
   --purple-light: rgba(197, 63, 173, 0.8);
+
+  /* NEW — Gold accent */
   --gold: #f5b942;
   --gold-light: #ffd36a;
   --gold-dark: #c89118;
-  --gold-gradient: linear-gradient(135deg, #f5b942 0%, #ffd36a 100%);
+
+  --gold-gradient: linear-gradient(135deg,
+      #f5b942 0%,
+      #ffd36a 100%);
+
+
+  /* Existing */
   --skill-bg: rgb(33, 19, 51);
   --skill-shadow: #802097;
+
   --about-overlay-bg: rgba(128, 0, 128, 0.3);
+
   --selection-bg: rgba(197, 63, 173, 0.25);
 }
+
+
+/* ============================================================
+   TAILWIND THEME TOKENS
+============================================================ */
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
+
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
+
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
+
   --color-popover: var(--popover);
   --color-popover-foreground: var(--popover-foreground);
+
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+
+  /* Existing purple */
   --color-purple: var(--purple);
   --color-purple-light: var(--purple-light);
+
+  /* NEW gold utilities */
   --color-gold: var(--gold);
   --color-gold-light: var(--gold-light);
   --color-gold-dark: var(--gold-dark);
+
   --font-sans: var(--font-poppins);
+
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
 }
 
-*, *::before, *::after { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
+
+/* ============================================================
+   BASE RESET
+============================================================ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  margin: 0; padding: 0; min-height: 100vh;
-  background: var(--background); color: var(--foreground);
-  font-family: var(--font-poppins), sans-serif; line-height: 1.5;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  margin: 0;
+  padding: 0;
+
+  min-height: 100vh;
+
+  background: var(--background);
+  color: var(--foreground);
+
+  font-family: var(--font-poppins), sans-serif;
+
+  line-height: 1.5;
+
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
-::selection { background: var(--selection-bg); color: var(--foreground); }
-img, svg, video { display: block; max-width: 100%; }
-button, input, textarea, select { font: inherit; }
-a { color: inherit; text-decoration: none; }
-::-webkit-scrollbar { width: 8px; }
-::-webkit-scrollbar-track { background: var(--background); }
-::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 999px; }
-::-webkit-scrollbar-thumb:hover { background: var(--purple-light); }
-.container { width: min(100% - 2rem, var(--container-width)); margin-inline: auto; }
-.section { position: relative; width: 100%; padding-block: 100px; }
-.glass { background: color-mix(in srgb, var(--card) 72%, transparent); border: 1px solid var(--border); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
-:focus-visible { outline: 2px solid var(--ring); outline-offset: 3px; }
+
+
+/* ============================================================
+   SELECTION
+============================================================ */
+
+::selection {
+  background: var(--selection-bg);
+  color: var(--foreground);
+}
+
+
+/* ============================================================
+   IMAGES / MEDIA
+============================================================ */
+
+img,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+
+/* ============================================================
+   LINKS
+============================================================ */
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+
+/* ============================================================
+   SCROLLBAR
+============================================================ */
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--purple-light);
+}
+
+
+/* ============================================================
+   CONTAINER
+============================================================ */
+
+.container {
+  width: min(100% - 2rem,
+      var(--container-width));
+
+  margin-inline: auto;
+}
+
+
+/* ============================================================
+   SECTION
+============================================================ */
+
+.section {
+  position: relative;
+  width: 100%;
+  padding-block: 100px;
+}
+
+
+/* ============================================================
+   COMMON GLASS EFFECT
+============================================================ */
+
+.glass {
+  background: color-mix(in srgb,
+      var(--card) 72%,
+      transparent);
+
+  border: 1px solid var(--border);
+
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+
+/* ============================================================
+   FOCUS
+============================================================ */
+
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
+}
+
+
+/* ============================================================
+   REDUCED MOTION
+============================================================ */
+
 @media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
-@media (max-width: 768px) { .section { padding-block: 72px; } }
-@media (max-width: 640px) { .container { width: min(100% - 1.5rem, var(--container-width)); } .section { padding-block: 60px; } }
+
+
+/* ============================================================
+   RESPONSIVE SECTION SPACING
+============================================================ */
+
+@media (max-width: 768px) {
+  .section {
+    padding-block: 72px;
+  }
+}
+
+@media (max-width: 640px) {
+  .container {
+    width: min(100% - 1.5rem,
+        var(--container-width));
+  }
+
+  .section {
+    padding-block: 60px;
+  }
+}

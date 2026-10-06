@@ -1,13 +1,24 @@
 "use client";
 
+/**
+ * Projects section built on the shadcn/ui Carousel (Embla).
+ *
+ * Requires:  npx shadcn@latest add carousel
+ *
+ * Behaviour (same as before):
+ *  - 3 slides on desktop, 2 on tablet, 1 on mobile
+ *  - auto-play with a visible countdown (ring + segmented progress)
+ *  - pauses on hover / keyboard focus / hidden tab / off-screen
+ *  - no mouse-drag or wheel scrolling – only auto-play, buttons, segments, arrow keys
+ *  - depth effect (scale / fade / tilt) on slides based on their position
+ */
+
 import {
     AnimatePresence,
-    animate,
     motion,
     useAnimationFrame,
     useInView,
     useMotionValue,
-    useMotionValueEvent,
     useReducedMotion,
     useTransform,
     type MotionValue,
@@ -24,10 +35,12 @@ import Link from "next/link";
 import {
     useCallback,
     useEffect,
+    useMemo,
     useRef,
     useState,
     type FocusEvent,
     type KeyboardEvent,
+    type ReactNode,
 } from "react";
 
 import { projects } from "@/lib/data";
@@ -36,6 +49,12 @@ import Container from "../common/Container";
 import SectionHeading from "../common/SectionHeading";
 import { Reveal, SpotlightCard } from "../animations/animations";
 import { Badge } from "../ui/badge";
+import {
+    Carousel,
+    CarouselContent,
+    CarouselItem,
+    type CarouselApi,
+} from "../ui/carousel";
 import { GithubIcon } from "../icons";
 
 /* ============================================================
@@ -44,17 +63,13 @@ import { GithubIcon } from "../icons";
 
 /** Time each slide stays before auto-advancing (ms). */
 const AUTOPLAY_MS = 5200;
-/** Space between cards (px). */
-const GAP = 24;
-/** Inner padding of the track (px) – keeps the first card off the fade mask. */
-const PAD = 28;
 
 const EASE = [0.22, 1, 0.36, 1] as const;
-const SPRING = { type: "spring", stiffness: 140, damping: 24, mass: 0.95 } as const;
 
 type Project = (typeof projects)[number];
 
 const pad2 = (n: number) => String(n).padStart(2, "0");
+const clamp = (v: number, min: number, max: number) => Math.max(min, Math.min(max, v));
 
 /* ============================================================
    SMALL UI PIECES
@@ -67,7 +82,7 @@ function ControlButton({
 }: {
     label: string;
     onClick: () => void;
-    children: React.ReactNode;
+    children: ReactNode;
 }) {
     return (
         <button
@@ -110,8 +125,8 @@ function RollingNumber({ value }: { value: number }) {
 
 /**
  * One pagination segment.
- * The current segment grows wider, fills with the auto-play timer
- * and shows a glowing head that travels along the bar.
+ * The current segment fills with the auto-play timer and shows a
+ * glowing head that travels along the bar.
  */
 function Segment({
     index,
@@ -135,16 +150,12 @@ function Segment({
     const headLeft = useTransform(timer, (v) => `${v * 100}%`);
 
     return (
-        <motion.button
+        <button
             type="button"
             onClick={() => onSelect(index)}
             aria-label={`Go to project ${index + 1} of ${total}`}
             aria-current={isCurrent}
-            initial={false}
-            // animate={{ flexGrow: isCurrent ? 3.4 : 1 }}
-            animate={{ flexGrow: 1 }}
-            transition={{ type: "spring", stiffness: 220, damping: 26 }}
-            className="group/seg relative flex h-7 min-w-0 basis-0 items-center focus-visible:outline-none"
+            className="group/seg relative flex h-7 min-w-0 flex-1 basis-0 items-center focus-visible:outline-none"
         >
             <span
                 className={`relative block h-[4px] w-full rounded-full transition-[height,background-color] duration-500 group-hover/seg:h-[6px] group-focus-visible/seg:h-[6px] ${inWindow ? "bg-primary/25" : "bg-border"
@@ -184,127 +195,51 @@ function Segment({
                     />
                 )}
             </span>
-        </motion.button>
+        </button>
     );
 }
 
 /* ============================================================
-   SLIDE (card + depth/parallax tied to carousel position)
+   PROJECT CARD
+   (the outer wrapper is what the carousel scales / fades / tilts)
 ============================================================ */
 
-function Slide({
-    project,
-    index,
-    total,
-    x,
-    step,
-    view,
-    cardW,
-    reduced,
-}: {
-    project: Project;
-    index: number;
-    total: number;
-    x: MotionValue<number>;
-    step: MotionValue<number>;
-    view: MotionValue<number>;
-    cardW: MotionValue<number>;
-    reduced: boolean;
-}) {
-    /** -1 (far left) … 0 (centered) … 1 (far right) */
-    const dist = useTransform([x, step, view, cardW], (v: number[]) => {
-        const [xv, s, vw, cw] = v;
-
-        if (!vw) return 0;
-
-        const center = PAD + index * s + xv + cw / 2;
-
-        return Math.max(
-            -1.4,
-            Math.min(1.4, (center - vw / 2) / (vw / 2)),
-        );
-    });
-
-    const scale = useTransform(
-        dist,
-        (d) => 1 - Math.min(Math.abs(d), 1) * 0.05,
-    );
-
-    const opacity = useTransform(
-        dist,
-        (d) => 1 - Math.min(Math.abs(d), 1.2) * 0.42,
-    );
-
-    const rotateY = useTransform(dist, (d) => d * -5);
-
-    const gold = index % 2 === 1;
-    const accent = gold ? "#ffd36a" : "var(--primary)";
+function ProjectCard({ project, index }: { project: Project; index: number }) {
+    const accent = index % 2 === 1 ? "#ffd36a" : "var(--primary)";
 
     return (
-        <motion.div
-            data-slide
-            role="group"
-            aria-roledescription="slide"
-            aria-label={`${index + 1} of ${total}`}
-            style={
-                reduced
-                    ? undefined
-                    : {
-                        scale,
-                        opacity,
-                        rotateY,
-                        transformPerspective: 1400,
-                    }
-            }
-            className="
-    w-[calc(100vw-56px)]
-    shrink-0
-    will-change-transform
-    sm:w-[calc((100vw-56px)/2-12px)]
-    lg:w-[calc((100vw-56px)/3-16px)]
-"
-        >
+        <div data-depth className="h-full will-change-transform">
             <SpotlightCard className="group h-full overflow-hidden rounded-[1.75rem] border-border/70 bg-card/80 backdrop-blur-xl transition-colors duration-500 hover:border-primary/30">
                 {/* ---------- Project Image ---------- */}
                 <div className="relative h-[245px] overflow-hidden sm:h-[275px]">
-                    {/* Image background */}
                     <div className="absolute inset-0 bg-secondary" />
 
-                    {/* Project image */}
                     <img
                         src={project?.image}
                         alt={`${project.title} project preview`}
-                        className="absolute inset-0 size-full object-cover"
+                        loading="lazy"
+                        decoding="async"
+                        className="absolute inset-0 size-full object-cover transition-transform duration-700 [transition-timing-function:cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]"
                     />
 
-                    {/* Subtle overlay for readability */}
                     <div
                         aria-hidden
                         className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-black/10"
                     />
 
-                    {/* Project number */}
                     <div className="absolute left-5 top-5 z-10 flex size-9 items-center justify-center rounded-full border border-white/15 bg-black/25 text-[11px] font-medium text-white/90 backdrop-blur-md">
                         {pad2(index + 1)}
                     </div>
 
-                    {/* External-link indicator */}
                     <div className="absolute right-5 top-5 z-10 flex size-9 items-center justify-center rounded-full border border-white/15 bg-black/25 text-white/90 opacity-0 backdrop-blur-md transition-all duration-500 group-hover:opacity-100">
-                        <ArrowUpRight
-                            className="size-4"
-                            aria-hidden
-                        />
+                        <ArrowUpRight className="size-4" aria-hidden />
                     </div>
                 </div>
 
                 {/* ---------- Content ---------- */}
                 <div className="relative flex min-h-[255px] flex-col p-6 sm:p-7">
                     <div className="mb-3 flex items-center gap-2">
-                        <span
-                            className="size-1.5 rounded-full"
-                            style={{ background: accent }}
-                        />
-
+                        <span className="size-1.5 rounded-full" style={{ background: accent }} />
                         <span className="text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
                             Selected Project
                         </span>
@@ -337,7 +272,6 @@ function Slide({
                             className="inline-flex items-center gap-1.5 text-sm font-medium text-primary transition-colors duration-300 hover:text-primary/75 focus-visible:outline-none focus-visible:underline"
                         >
                             Live demo
-
                             <ExternalLink
                                 className="size-3.5 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
                                 aria-hidden
@@ -350,92 +284,108 @@ function Slide({
                             rel="noopener noreferrer"
                             className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground transition-colors duration-300 hover:text-foreground focus-visible:outline-none focus-visible:underline"
                         >
-                            <GithubIcon
-                                className="size-4"
-                                aria-hidden
-                            />
-
+                            <GithubIcon className="size-4" aria-hidden />
                             Source
                         </a>
                     </div>
                 </div>
             </SpotlightCard>
-        </motion.div>
+        </div>
     );
 }
 
 /* ============================================================
-   CAROUSEL
+   SHOWCASE
 ============================================================ */
 
 function ProjectsShowcase() {
     const reduced = !!useReducedMotion();
-    const count = projects.length;
-
     const sectionRef = useRef<HTMLElement>(null);
-    const stageRef = useRef<HTMLDivElement>(null);
-    const trackRef = useRef<HTMLDivElement>(null);
 
-    /* ---------- motion values (shared with every slide) ---------- */
-    const x = useMotionValue(0);
-    const stepMV = useMotionValue(GAP + 440);
-    const viewMV = useMotionValue(0);
-    const cardMV = useMotionValue(440);
-    const timer = useMotionValue(0); // 0 → 1 auto-play countdown
+    const [api, setApi] = useState<CarouselApi>();
+    const [current, setCurrent] = useState(0);
+    const [snapCount, setSnapCount] = useState(projects.length);
+    const [inViewSlides, setInViewSlides] = useState<number[]>([]);
 
-    /* ---------- state ---------- */
-    const [maxScroll, setMaxScroll] = useState(0);
-    const [visible, setVisible] = useState(1);
-    const [lead, setLead] = useState(0);
-    const [atEnd, setAtEnd] = useState(false);
     const [playing, setPlaying] = useState(true);
     const [hovered, setHovered] = useState(false);
     const [focused, setFocused] = useState(false);
     const [docHidden, setDocHidden] = useState(false);
 
-    /* ---------- refs for callbacks ---------- */
-    const stepRef = useRef(GAP + 440);
-    const maxRef = useRef(0);
+    const timer = useMotionValue(0); // 0 → 1 auto-play countdown
     const elapsed = useRef(0);
-    const controls = useRef<ReturnType<typeof animate> | null>(null);
 
     const inView = useInView(sectionRef, { amount: 0.3 });
 
-    /* ---------- measuring ---------- */
-    const measure = useCallback(() => {
-        const stage = stageRef.current;
-        const track = trackRef.current;
-        if (!stage || !track) return;
+    /* ---------- Embla options ---------- */
+    const opts = useMemo(
+        () => ({
+            align: "start" as const,
+            loop: true,
+            slidesToScroll: 1,
+            watchDrag: false, // no mouse / touch drag
+            duration: reduced ? 6 : 32, // higher = slower, smoother slide
+            inViewThreshold: 0.5,
+        }),
+        [reduced]
+    );
 
-        const card = track.querySelector<HTMLElement>("[data-slide]");
-        const cw = card?.offsetWidth ?? 440;
-        const s = cw + GAP;
-        const vw = stage.clientWidth;
-        const max = Math.max(0, track.scrollWidth - vw);
+    /* ---------- depth effect (scale / fade / tilt by position) ---------- */
+    const applyDepth = useCallback(
+        (embla: NonNullable<CarouselApi>) => {
+            if (reduced) return;
+            const viewport = embla.rootNode().getBoundingClientRect();
+            const half = viewport.width / 2;
+            if (!half) return;
+            const center = viewport.left + half;
 
-        stepRef.current = s;
-        maxRef.current = max;
-        stepMV.set(s);
-        cardMV.set(cw);
-        viewMV.set(vw);
-        setMaxScroll(max);
-        setVisible(Math.max(1, Math.floor((vw + GAP) / s)));
+            embla.slideNodes().forEach((node) => {
+                const el = node.querySelector<HTMLElement>("[data-depth]");
+                if (!el) return;
+                const r = node.getBoundingClientRect();
+                const d = clamp((r.left + r.width / 2 - center) / half, -1.4, 1.4);
+                el.style.transform = `perspective(1400px) rotateY(${d * -5}deg) scale(${1 - Math.min(Math.abs(d), 1) * 0.05
+                    })`;
+                el.style.opacity = String(1 - Math.min(Math.abs(d), 1.2) * 0.42);
+            });
+        },
+        [reduced]
+    );
 
-        // keep the current position valid after a resize
-        const clamped = Math.max(-max, Math.min(0, x.get()));
-        if (clamped !== x.get()) x.set(clamped);
-    }, [cardMV, stepMV, viewMV, x]);
-
+    /* ---------- sync with Embla ---------- */
     useEffect(() => {
-        measure();
-        const stage = stageRef.current;
-        const track = trackRef.current;
-        if (!stage || !track) return;
-        const ro = new ResizeObserver(measure);
-        ro.observe(stage);
-        ro.observe(track);
-        return () => ro.disconnect();
-    }, [measure]);
+        if (!api) return;
+
+        const syncSelected = () => {
+            setCurrent(api.selectedScrollSnap());
+            elapsed.current = 0; // restart countdown on every slide change
+            timer.set(0);
+        };
+        const syncInView = () => setInViewSlides(api.slidesInView());
+        const onScroll = () => applyDepth(api);
+        const onReInit = () => {
+            setSnapCount(api.scrollSnapList().length);
+            syncSelected();
+            syncInView();
+            applyDepth(api);
+        };
+
+        onReInit();
+
+        api.on("select", syncSelected);
+        api.on("slidesInView", syncInView);
+        api.on("scroll", onScroll);
+        api.on("resize", onScroll);
+        api.on("reInit", onReInit);
+
+        return () => {
+            api.off("select", syncSelected);
+            api.off("slidesInView", syncInView);
+            api.off("scroll", onScroll);
+            api.off("resize", onScroll);
+            api.off("reInit", onReInit);
+        };
+    }, [api, applyDepth, timer]);
 
     useEffect(() => {
         const onVis = () => setDocHidden(document.hidden);
@@ -443,68 +393,47 @@ function ProjectsShowcase() {
         return () => document.removeEventListener("visibilitychange", onVis);
     }, []);
 
-    /* ---------- derived index (counter, segments) ---------- */
-    useMotionValueEvent(x, "change", (v) => {
-        const max = maxRef.current;
-        setAtEnd(max > 0 && v <= -max + 2);
-        setLead(Math.max(0, Math.min(count - 1, Math.round(-v / stepRef.current))));
-    });
-
     /* ---------- navigation ---------- */
-    const goTo = useCallback(
-        (i: number) => {
-            const idx = Math.max(0, Math.min(count - 1, i));
-            const target = -Math.min(idx * stepRef.current, maxRef.current);
-            controls.current?.stop();
-            elapsed.current = 0;
-            timer.set(0);
-            controls.current = animate(x, target, reduced ? { duration: 0 } : SPRING);
-        },
-        [count, reduced, timer, x]
-    );
-
     const next = useCallback(() => {
-        if (maxRef.current <= 0) return;
-        const end = x.get() <= -maxRef.current + 2;
-        goTo(end ? 0 : Math.round(-x.get() / stepRef.current) + 1);
-    }, [goTo, x]);
+        if (!api) return;
+        if (api.canScrollNext()) api.scrollNext();
+        else api.scrollTo(0);
+    }, [api]);
 
     const prev = useCallback(() => {
-        if (maxRef.current <= 0) return;
-        const start = x.get() >= -2;
-        goTo(start ? count - 1 : Math.round(-x.get() / stepRef.current) - 1);
-    }, [count, goTo, x]);
+        if (!api) return;
+        if (api.canScrollPrev()) api.scrollPrev();
+        else api.scrollTo(api.scrollSnapList().length - 1);
+    }, [api]);
+
+    const goTo = useCallback((i: number) => api?.scrollTo(i), [api]);
 
     /* ---------- auto-play ---------- */
-    const interactive = maxScroll > 0;
-    const canPlay = playing && !reduced && interactive && !hovered && !focused && inView && !docHidden;
+    const interactive = snapCount > 1;
+    const canPlay = !!api && playing && !reduced && interactive && !hovered && !focused && inView && !docHidden;
     const showTimer = playing && !reduced && interactive;
 
     useAnimationFrame((_, delta) => {
         if (!canPlay) return;
         elapsed.current += Math.min(delta, 100);
         timer.set(Math.min(1, elapsed.current / AUTOPLAY_MS));
-        if (elapsed.current >= AUTOPLAY_MS) next();
+        if (elapsed.current >= AUTOPLAY_MS) {
+            elapsed.current = 0;
+            next();
+        }
     });
 
-    /* ---------- keyboard + focus ---------- */
+    /* ---------- keyboard + focus (arrow keys are handled by shadcn Carousel) ---------- */
     const onKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
-        if (e.key === "ArrowRight") { e.preventDefault(); next(); }
-        else if (e.key === "ArrowLeft") { e.preventDefault(); prev(); }
-        else if (e.key === "Home") { e.preventDefault(); goTo(0); }
-        else if (e.key === "End") { e.preventDefault(); goTo(count - 1); }
+        if (e.key === "Home") { e.preventDefault(); goTo(0); }
+        else if (e.key === "End") { e.preventDefault(); goTo(snapCount - 1); }
     };
-
     const onFocus = (e: FocusEvent<HTMLDivElement>) => {
         if (e.target.matches(":focus-visible")) setFocused(true);
     };
     const onBlur = (e: FocusEvent<HTMLDivElement>) => {
         if (!e.currentTarget.contains(e.relatedTarget as Node | null)) setFocused(false);
     };
-
-    /* ---------- derived display values ---------- */
-    const current = atEnd ? count - 1 : lead;
-    const windowStart = atEnd ? Math.max(0, count - visible) : lead;
 
     return (
         <section id="projects" ref={sectionRef} className="relative overflow-hidden py-24 sm:py-28 lg:py-32">
@@ -532,9 +461,9 @@ function ProjectsShowcase() {
                 </Reveal>
 
                 <Reveal delay={0.08}>
-                    <div
-                        role="region"
-                        aria-roledescription="carousel"
+                    <Carousel
+                        setApi={setApi}
+                        opts={opts}
                         aria-label="Projects"
                         tabIndex={0}
                         onKeyDown={onKeyDown}
@@ -544,35 +473,20 @@ function ProjectsShowcase() {
                         onMouseLeave={() => setHovered(false)}
                         className="mt-14 rounded-3xl outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:ring-offset-8 focus-visible:ring-offset-background sm:mt-16"
                     >
-                        {/* ---------- Stage (auto-moving, no drag / wheel) ---------- */}
-                        <div
-                            ref={stageRef}
-                            className="relative -mx-1 overflow-hidden px-1 py-8 [mask-image:linear-gradient(90deg,transparent,#000_24px,#000_calc(100%-24px),transparent)]"
-                        >
-                            <motion.div
-                                ref={trackRef}
-                                style={{ x, columnGap: GAP, paddingInline: PAD }}
-                                className="flex w-max"
-                            >
-                                {projects.map((project, i) => (
-                                    <Slide
-                                        key={`${project.title}-${i}`}
-                                        project={project}
-                                        index={i}
-                                        total={count}
-                                        x={x}
-                                        step={stepMV}
-                                        view={viewMV}
-                                        cardW={cardMV}
-                                        reduced={reduced}
-                                    />
-                                ))}
-                            </motion.div>
-                        </div>
+                        {/* ---------- Slides: 1 mobile · 2 tablet · 3 desktop ---------- */}
+                        <CarouselContent className="-ml-6 py-8">
+                            {projects.map((project, i) => (
+                                <CarouselItem
+                                    key={`${project.title}-${i}`}
+                                    className="basis-full pl-6 md:basis-1/2 lg:basis-1/3"
+                                >
+                                    <ProjectCard project={project} index={i} />
+                                </CarouselItem>
+                            ))}
+                        </CarouselContent>
 
                         {/* ---------- Control dock: counter · progress · handlers ---------- */}
                         <div className="relative mt-2 overflow-hidden rounded-2xl border border-border/70 bg-card/60 px-4 py-3 backdrop-blur-xl sm:px-5">
-                            {/* soft top highlight */}
                             <div
                                 aria-hidden
                                 className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent"
@@ -586,23 +500,23 @@ function ProjectsShowcase() {
                                             <RollingNumber value={current + 1} />
                                         </span>
                                         <span className="text-xs font-medium text-muted-foreground">
-                                            / {pad2(count)}
+                                            / {pad2(snapCount)}
                                         </span>
                                     </div>
                                 </div>
 
                                 {/* Segmented progress */}
                                 <div className="order-3 flex w-full min-w-0 items-center gap-1.5 sm:order-2 sm:w-auto sm:flex-1">
-                                    {projects.map((p, i) => (
+                                    {Array.from({ length: snapCount }, (_, i) => (
                                         <Segment
-                                            key={`${p.title}-seg-${i}`}
+                                            key={i}
                                             index={i}
                                             current={current}
-                                            inWindow={i >= windowStart && i < windowStart + visible}
+                                            inWindow={inViewSlides.includes(i)}
                                             timer={timer}
                                             showTimer={showTimer}
                                             onSelect={goTo}
-                                            total={count}
+                                            total={snapCount}
                                         />
                                     ))}
                                 </div>
@@ -664,9 +578,9 @@ function ProjectsShowcase() {
 
                         {/* Screen-reader announcement */}
                         <p className="sr-only" aria-live={playing ? "off" : "polite"}>
-                            Showing project {current + 1} of {count}: {projects[current]?.title}
+                            Showing project {current + 1} of {snapCount}: {projects[current]?.title}
                         </p>
-                    </div>
+                    </Carousel>
                 </Reveal>
 
                 {/* ---------- CTA ---------- */}
