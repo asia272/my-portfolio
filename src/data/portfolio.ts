@@ -39,9 +39,9 @@ export const ROLES = [
 ] as const;
 
 export const STATS: Stat[] = [
-    { label: "Years of hands-on learning", value: 3, suffix: "+" },
+    { label: "Years of hands-on development", value: 3, suffix: "+" },
     { label: "Major projects built", value: 4, suffix: "" },
-    { label: "Core technologies", value: 15, suffix: "+" },
+    { label: "Technologies", value: 23, suffix: "+" },
     { label: "Commitment to quality", value: 100, suffix: "%" },
 ];
 

@@ -268,7 +268,7 @@ export default function About() {
                         <div className="grid grid-cols-2 gap-4">
                             {STATS.map((stat, index) => (
                                 <Reveal key={stat.label} delay={0.08 * index}>
-                                    <SpotlightCard className="p-6 text-center">
+                                    <SpotlightCard className="flex h-full min-h-[120px] items-center justify-center p-6 text-center sm:min-h-[140px]">
                                         <p className="text-gold text-4xl font-extrabold sm:text-5xl">
                                             <Counter to={stat.value} suffix={stat.suffix} />
                                         </p>
@@ -449,17 +449,14 @@ function EducationItem({
             ================================================== */}
 
             <motion.span
-                initial={{
-                    scale: 0,
-                    opacity: 0,
-                }}
+                initial={false}
                 whileInView={{
                     scale: 1,
                     opacity: 1,
                 }}
                 viewport={{
                     once: true,
-                    margin: "-80px",
+                    amount: 0.1,
                 }}
                 transition={{
                     duration: 0.45,
@@ -468,7 +465,7 @@ function EducationItem({
                     stiffness: 240,
                     damping: 18,
                 }}
-                className="absolute -left-[2rem] top-[5px] size-3 rounded-full border-2 border-background bg-primary ring-4 ring-primary/20"
+                className="absolute -left-[2rem] top-[5px] size-3 rounded-full border-2 border-background bg-primary ring-4 ring-primary/20 "
             >
                 <span className="size-[3px] rounded-full bg-background" />
             </motion.span>
@@ -589,12 +586,7 @@ function EducationItem({
    VALUE ICON
 ============================================================ */
 
-/*
- * This keeps the old VALUES data completely unchanged.
- *
- * If your existing Icon component already handles all these
- * names, you can simply use that component here instead.
- */
+
 
 function ValueIcon({
     name,
