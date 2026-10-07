@@ -8,8 +8,10 @@ import { MotionConfig } from "motion/react";
 import Preloader from "@/components/common/Preloader";
 import ScrollProgress from "@/components/common/ScrollProgress";
 import { cn } from "@/lib/utils";
+import AppConvexProvider from "@/components/providers/ConvexProvider";
+import { Toaster } from "react-hot-toast";
 
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
+const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
 
 const poppins = Poppins({ subsets: ["latin"], weight: ["400", "500", "600", "700"], variable: "--font-poppins" });
 
@@ -23,11 +25,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" suppressHydrationWarning className={cn("font-sans", geist.variable)}>
       <body className={`${poppins.variable} antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+
+
           <MotionConfig reducedMotion="user">
             <Preloader />
             {/* <Cursor /> */}
             <ScrollProgress />
-            {children}
+
+            <AppConvexProvider>
+              {children}
+              <Toaster position="top-right" />
+            </AppConvexProvider>
           </MotionConfig>
         </ThemeProvider>
       </body>
