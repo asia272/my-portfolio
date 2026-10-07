@@ -10,7 +10,7 @@ export const INTRO = 2.7;
 
 export function Reveal({ children, delay = 0, className }: { children: ReactNode; delay?: number; className?: string }) {
   return (
-    <motion.div className={className} initial={{ opacity: 0, y: 40, filter: "blur(10px)" }} whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }} viewport={{ once: true, margin: "-80px" }} transition={{ duration: 0.9, delay, ease: EASE }}>
+    <motion.div className={className} initial={{ opacity: 0, y: 40, filter: "blur(10px)" }} whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }} viewport={{ once: false, margin: "-80px" }} transition={{ duration: 0.9, delay, ease: EASE }}>
       {children}
     </motion.div>
   );
@@ -19,7 +19,7 @@ export function Reveal({ children, delay = 0, className }: { children: ReactNode
 /** Per-letter rise. Pass `now` for above-the-fold text, otherwise it triggers on scroll. */
 export function SplitText({ text, className, delay = 0, now = false }: { text: string; className?: string; delay?: number; now?: boolean }) {
   let n = 0;
-  const trigger = now ? { animate: "show" } : { whileInView: "show", viewport: { once: true, margin: "-60px" } };
+  const trigger = now ? { animate: "show" } : { whileInView: "show", viewport: { once: false, margin: "-60px" } };
   return (
     <motion.span className={className} aria-label={text} initial="hidden" {...trigger} transition={{ staggerChildren: 0.035, delayChildren: delay }}>
       {text.split(" ").map((w, wi) => (
@@ -82,18 +82,36 @@ export function SpotlightCard({ children, className = "" }: { children: ReactNod
   );
 }
 
-export function Counter({ to, suffix = "" }: { to: number; suffix?: string }) {
+export function Counter({
+  to,
+  suffix = "",
+}: {
+  to: number;
+  suffix?: string;
+}) {
   const ref = useRef<HTMLSpanElement>(null);
-  const inView = useInView(ref, { once: true });
+  const inView = useInView(ref, { once: false });
   const [n, setN] = useState(0);
+
   useEffect(() => {
     if (!inView) return;
-    const c = animate(0, to, { duration: 2.2, ease: EASE, onUpdate: (v) => setN(Math.round(v)) });
+
+    const c = animate(0, to, {
+      duration: 2.2,
+      ease: EASE,
+      onUpdate: (v) => setN(Math.round(v)),
+    });
+
     return () => c.stop();
   }, [inView, to]);
-  return <span ref={ref}>{n}{suffix}</span>;
-}
 
+  return (
+    <span ref={ref}>
+      {n}
+      {suffix}
+    </span>
+  );
+}
 /** Infinite marquee that skews with scroll velocity. */
 // export function Marquee({ items, reverse = false, duration = 40 }: { items: string[]; reverse?: boolean; duration?: number }) {
 //   const { scrollY } = useScroll();

@@ -486,27 +486,11 @@ function ProjectsShowcase() {
                         </CarouselContent>
 
                         {/* ---------- Control dock: counter · progress · handlers ---------- */}
-                        <div className="relative mt-2 overflow-hidden rounded-2xl border border-border/70 bg-card/60 px-4 py-3 backdrop-blur-xl sm:px-5">
-                            <div
-                                aria-hidden
-                                className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent"
-                            />
+                        <div className="relative ">
 
-                            <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
-                                {/* Counter */}
-                                <div className="order-1 flex min-w-0 items-center gap-4">
-                                    <div className="flex items-baseline gap-2">
-                                        <span className="text-3xl font-semibold tracking-tight sm:text-4xl">
-                                            <RollingNumber value={current + 1} />
-                                        </span>
-                                        <span className="text-xs font-medium text-muted-foreground">
-                                            / {pad2(snapCount)}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                {/* Segmented progress */}
-                                <div className="order-3 flex w-full min-w-0 items-center gap-1.5 sm:order-2 sm:w-auto sm:flex-1">
+                            <div className="flex flex-col items-center gap-4">
+                                {/* Segmented progress — full width */}
+                                <div className="flex w-full items-center gap-1.5">
                                     {Array.from({ length: snapCount }, (_, i) => (
                                         <Segment
                                             key={i}
@@ -521,10 +505,13 @@ function ProjectsShowcase() {
                                     ))}
                                 </div>
 
-                                {/* Handlers */}
-                                <div className="order-2 ml-auto flex items-center gap-2 sm:order-3 sm:ml-0">
+                                {/* Handlers — centered on second row */}
+                                <div className="flex items-center justify-center gap-2">
                                     <ControlButton label="Previous project" onClick={prev}>
-                                        <ArrowLeft className="size-4 transition-transform duration-300 group-hover/btn:-translate-x-0.5" aria-hidden />
+                                        <ArrowLeft
+                                            className="size-4 transition-transform duration-300 group-hover/btn:-translate-x-0.5"
+                                            aria-hidden
+                                        />
                                     </ControlButton>
 
                                     <button
@@ -533,15 +520,28 @@ function ProjectsShowcase() {
                                         aria-pressed={!playing}
                                         onClick={() => setPlaying((p) => !p)}
                                         className="
-                                            relative flex size-11 items-center justify-center rounded-full
-                                            border border-border/80 bg-background/70 text-foreground
-                                            transition-all duration-300 hover:border-primary/40 hover:bg-primary/10
-                                            focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50
-                                            active:scale-90
-                                        "
+                    relative flex size-11 items-center justify-center rounded-full
+                    border border-border/80 bg-background/70 text-foreground
+                    transition-all duration-300
+                    hover:border-primary/40 hover:bg-primary/10
+                    focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50
+                    active:scale-90
+                "
                                     >
-                                        <svg viewBox="0 0 44 44" className="pointer-events-none absolute inset-0 -rotate-90" aria-hidden>
-                                            <circle cx="22" cy="22" r="20.5" fill="none" strokeWidth="1.5" className="stroke-border" />
+                                        <svg
+                                            viewBox="0 0 44 44"
+                                            className="pointer-events-none absolute inset-0 -rotate-90"
+                                            aria-hidden
+                                        >
+                                            <circle
+                                                cx="22"
+                                                cy="22"
+                                                r="20.5"
+                                                fill="none"
+                                                strokeWidth="1.5"
+                                                className="stroke-border"
+                                            />
+
                                             {showTimer && (
                                                 <motion.circle
                                                     cx="22"
@@ -555,6 +555,7 @@ function ProjectsShowcase() {
                                                 />
                                             )}
                                         </svg>
+
                                         <AnimatePresence mode="wait" initial={false}>
                                             <motion.span
                                                 key={playing ? "pause" : "play"}
@@ -564,18 +565,27 @@ function ProjectsShowcase() {
                                                 transition={{ duration: 0.22, ease: EASE }}
                                                 className="flex"
                                             >
-                                                {playing ? <Pause className="size-4" aria-hidden /> : <Play className="size-4 translate-x-px" aria-hidden />}
+                                                {playing ? (
+                                                    <Pause className="size-4" aria-hidden />
+                                                ) : (
+                                                    <Play
+                                                        className="size-4 translate-x-px"
+                                                        aria-hidden
+                                                    />
+                                                )}
                                             </motion.span>
                                         </AnimatePresence>
                                     </button>
 
                                     <ControlButton label="Next project" onClick={next}>
-                                        <ArrowRight className="size-4 transition-transform duration-300 group-hover/btn:translate-x-0.5" aria-hidden />
+                                        <ArrowRight
+                                            className="size-4 transition-transform duration-300 group-hover/btn:translate-x-0.5"
+                                            aria-hidden
+                                        />
                                     </ControlButton>
                                 </div>
                             </div>
                         </div>
-
                         {/* Screen-reader announcement */}
                         <p className="sr-only" aria-live={playing ? "off" : "polite"}>
                             Showing project {current + 1} of {snapCount}: {projects[current]?.title}
@@ -584,7 +594,7 @@ function ProjectsShowcase() {
                 </Reveal>
 
                 {/* ---------- CTA ---------- */}
-                <Reveal delay={0.12} className="mt-14 flex justify-center sm:mt-16">
+                <Reveal delay={0.12} className="mt-14 flex  sm:mt-16">
                     <Link href="/projects" className="custom-btn group inline-flex items-center gap-2">
                         See all projects
                         <ArrowUpRight

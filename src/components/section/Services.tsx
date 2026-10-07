@@ -1,73 +1,4 @@
-// import { PROCESS, SERVICES } from "@/data/portfolio";
-// import { Icon } from "@/components/ui/Icon";
-// import { Reveal, SpotlightCard } from "../animations/animations";
-// import SectionHeading from "../common/SectionHeading";
-// import Container from "../common/Container";
 
-
-
-
-
-// export function Services() {
-//     return (
-//         <section id="services" className="section bg-secondary/40">
-//             <Container>
-//                 <SectionHeading
-//                     label="Services"
-//                     title="How I can"
-//                     highlightedText="help you"
-//                     description="From a single polished interface to a complete product, built with care."
-//                 />
-
-//                 <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-//                     {SERVICES.map((service, index) => (
-//                         <Reveal key={service.title} delay={0.08 * index}>
-//                             <SpotlightCard className="p-6">
-//                                 <span className="grid size-12 place-items-center rounded-2xl bg-[image:var(--gold-gradient)] text-[#1b1305] shadow-lg shadow-gold/30">
-//                                     <Icon name={service.icon} className="size-6" />
-//                                 </span>
-//                                 <h3 className="mt-5 text-lg font-semibold">{service.title}</h3>
-//                                 <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
-//                                     {service.description}
-//                                 </p>
-//                             </SpotlightCard>
-//                         </Reveal>
-//                     ))}
-//                 </div>
-
-//                 {/* Process */}
-//                 <div className="mt-20">
-//                     <Reveal>
-//                         <h3 className="mb-10 text-center text-2xl font-bold sm:text-3xl">
-//                             My <span className="text-gradient">process</span>
-//                         </h3>
-//                     </Reveal>
-
-//                     <ol className="relative grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-//                         <div
-//                             aria-hidden
-//                             className="absolute top-7 right-[12.5%] left-[12.5%] hidden h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent lg:block"
-//                         />
-//                         {PROCESS.map((step, index) => (
-//                             <li key={step.title} className="relative text-center">
-//                                 <Reveal delay={0.1 * index}>
-//                                     <span className="relative mx-auto grid size-14 place-items-center rounded-full border border-primary/40 bg-background text-lg font-bold text-gold ring-8 ring-secondary/40">
-//                                         {index + 1}
-//                                     </span>
-//                                     <h4 className="mt-4 font-semibold">{step.title}</h4>
-//                                     <p className="mx-auto mt-1.5 max-w-[16rem] text-sm leading-relaxed text-muted-foreground">
-//                                         {step.description}
-//                                     </p>
-//                                 </Reveal>
-//                             </li>
-//                         ))}
-//                     </ol>
-//                 </div>
-//             </Container>
-
-//         </section>
-//     );
-// }
 "use client";
 
 import { motion, useInView } from "motion/react";
@@ -84,7 +15,7 @@ const EASE = [0.22, 1, 0.36, 1] as const;
 function ProcessTimelineLine() {
     const lineRef = useRef<HTMLDivElement>(null);
     const isInView = useInView(lineRef, {
-        once: true,
+        once: false,
         margin: "-100px",
     });
 
