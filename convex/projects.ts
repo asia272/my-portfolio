@@ -19,7 +19,15 @@ const projectType = v.union(
     v.literal("OTHER")
 );
 
-
+export const getAll = query({
+    args: {},
+    handler: async (ctx) => {
+        return await ctx.db
+            .query("projects")
+            .order("desc")
+            .collect();
+    },
+});
 
 export const getActive = query({
     args: {},
