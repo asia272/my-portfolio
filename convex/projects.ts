@@ -19,28 +19,34 @@ const projectType = v.union(
     v.literal("OTHER")
 );
 
-export const getAll = query({
-    args: {},
 
-    handler: async (ctx) => {
-        return await ctx.db
-            .query("projects")
-            .order("desc")
-            .collect();
-    },
-});
 
 export const getActive = query({
     args: {},
 
     handler: async (ctx) => {
-        return await ctx.db
+        const projects = await ctx.db
             .query("projects")
             .filter((q) =>
                 q.eq(q.field("isActive"), true)
             )
             .order("desc")
             .collect();
+
+        return await Promise.all(
+            projects.map(async (project) => {
+                const image = project.mediaStorageId
+                    ? await ctx.storage.getUrl(
+                        project.mediaStorageId
+                    )
+                    : null;
+
+                return {
+                    ...project,
+                    image,
+                };
+            })
+        );
     },
 });
 
