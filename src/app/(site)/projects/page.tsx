@@ -20,13 +20,13 @@ import { useReducedMotion } from "motion/react";
 import { useQuery } from "convex/react";
 import { Check, ChevronDown, ListFilter, X } from "lucide-react";
 
-import { api } from "../../../convex/_generated/api";
+import { api } from "../../../../convex/_generated/api";
 
-import Container from "../../components/common/Container";
-import SectionHeading from "../../components/common/SectionHeading";
-import { BackgroundSection } from "../../components/common/AnimatedBackground";
-import { Reveal } from "../../components/animations/animations";
-import ProjectCard from "../../components/ProjectCard";
+import Container from "../../../components/common/Container";
+import SectionHeading from "../../../components/common/SectionHeading";
+import { BackgroundSection } from "../../../components/common/AnimatedBackground";
+import { Reveal } from "../../../components/animations/animations";
+import ProjectCard from "../../../components/ProjectCard";
 
 import {
     DropdownMenu,
@@ -36,7 +36,7 @@ import {
     DropdownMenuRadioItem,
     DropdownMenuSeparator,
     DropdownMenuTrigger,
-} from "../../components/ui/dropdown-menu";
+} from "../../../components/ui/dropdown-menu";
 
 // import {
 //     PROJECT_TYPE_ORDER,

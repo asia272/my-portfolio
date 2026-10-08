@@ -1,12 +1,5 @@
-import type {
-    Education,
-    ProcessStep,
-    Project,
-    Service,
-    SkillGroup,
-    Stat
-} from "@/types";
 
+import { Education, ProcessStep, Project, Service, SkillGroup, Stat } from "@/types";
 /* ------------------------------------------------------------------
    SITE CONFIG — edit the values below to personalise the website.
    Empty strings are fine: the matching UI is simply hidden.

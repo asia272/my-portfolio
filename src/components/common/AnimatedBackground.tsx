@@ -106,58 +106,102 @@ function NetworkCanvas({
 
         if (!canvas || !ctx) return;
 
-        type Node = {
+        type Particle = {
+            bx: number; // home position
+            by: number;
+            ox: number; // orbit size around home
+            oy: number;
+            sp: number; // orbit speed
+            ph: number; // orbit phase
             x: number;
             y: number;
             vx: number;
             vy: number;
+            tx: number; // current target (home + orbit)
+            ty: number;
+            z: number; // depth: 0.55 (far) .. 1 (near)
             r: number;
             gold: boolean;
-            phase: number;
+            energy: number; // 0..1, how far it is pushed from its target
         };
 
         const TAU = Math.PI * 2;
-        const LINK = 140;
-        const LINK2 = LINK * LINK;
-        const MOUSE_R = 190;
-        const MOUSE_R2 = MOUSE_R * MOUSE_R;
 
-        let nodes: Node[] = [];
+        /* ---- tuning knobs ---- */
+        const FLEE_R = 175; // how far the cursor scares particles
+        const FLEE_R2 = FLEE_R * FLEE_R;
+        const FLEE_FORCE = 2.4; // how hard they run
+        const SWIRL = 0.3; // sideways push, makes the escape curved
+        const SPRING = 0.012; // pull back to home
+        const DAMP = 0.88; // lower = stops faster
+        const MAX_SPEED = 14;
+        const CURSOR_LINK_R = 240; // "string" lines around the cursor
+
+        let nodes: Particle[] = [];
+        let link = 140;
+        let link2 = link * link;
         let w = 0;
         let h = 0;
         let raf = 0;
         let last = performance.now();
+        let sim = 0; // simulation time in seconds (pauses when hidden)
         let tick = 0;
         let primary = "#6366f1";
+
+        // cursor speed tracking (fast mouse = stronger scare)
+        let pmx = 0;
+        let pmy = 0;
+        let hasPrev = false;
 
         const readColor = () => {
             const c = getComputedStyle(canvas).color;
             if (c) primary = c;
         };
 
+        /** Evenly spread (jittered grid) so the network never clumps. */
         const seed = () => {
-            const count = clamp(
-                Math.round((w * h) / 22000),
-                22,
-                58
-            );
+            const count = clamp(Math.round((w * h) / 20000), 24, 70);
 
-            nodes = Array.from({ length: count }, (_, i) => ({
-                x: Math.random() * w,
-                y: Math.random() * h,
-                vx: (Math.random() - 0.5) * 0.3,
-                vy: (Math.random() - 0.5) * 0.3,
-                r: 1 + Math.random() * 1.6,
-                gold: i % 6 === 0,
-                phase: Math.random() * TAU,
-            }));
+            const cols = Math.max(2, Math.round(Math.sqrt((count * w) / h)));
+            const rows = Math.max(2, Math.ceil(count / cols));
+
+            const cw = w / cols;
+            const ch = h / rows;
+
+            link = clamp(Math.max(cw, ch) * 1.55, 110, 180);
+            link2 = link * link;
+
+            nodes = [];
+
+            for (let row = 0; row < rows; row++) {
+                for (let col = 0; col < cols; col++) {
+                    const bx = (col + 0.5) * cw + (Math.random() - 0.5) * cw * 0.8;
+                    const by = (row + 0.5) * ch + (Math.random() - 0.5) * ch * 0.8;
+
+                    nodes.push({
+                        bx,
+                        by,
+                        ox: 8 + Math.random() * 20,
+                        oy: 8 + Math.random() * 20,
+                        sp: 0.15 + Math.random() * 0.25,
+                        ph: Math.random() * TAU,
+                        x: bx,
+                        y: by,
+                        vx: 0,
+                        vy: 0,
+                        tx: bx,
+                        ty: by,
+                        z: 0.55 + Math.random() * 0.45,
+                        r: 1 + Math.random() * 1.4,
+                        gold: Math.random() < 0.16,
+                        energy: 0,
+                    });
+                }
+            }
         };
 
         const resize = () => {
-            const dpr = Math.min(
-                window.devicePixelRatio || 1,
-                2
-            );
+            const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
             w = canvas.clientWidth;
             h = canvas.clientHeight;
@@ -187,10 +231,8 @@ function NetworkCanvas({
             }
 
             const dt = Math.min(now - last, 50) / 16.67;
-
             last = now;
-
-            const t = now / 1000;
+            sim += dt / 60;
 
             if (tick++ % 120 === 0) {
                 readColor();
@@ -198,59 +240,75 @@ function NetworkCanvas({
 
             const mx = pointerX.get();
             const my = pointerY.get();
+            const g = glow.get(); // smooth 0..1, so the effect fades in and out
+            const mouseOn = g > 0.02;
 
-            const mouseOn = glow.get() > 0.05;
+            // fast cursor = stronger scare
+            let boost = 1;
 
-            const damp = Math.pow(0.992, dt);
+            if (mouseOn) {
+                if (hasPrev) {
+                    boost =
+                        1 +
+                        clamp(Math.hypot(mx - pmx, my - pmy) / (dt * 5), 0, 1.2);
+                }
+
+                pmx = mx;
+                pmy = my;
+                hasPrev = true;
+            } else {
+                hasPrev = false;
+            }
+
+            const damp = Math.pow(DAMP, dt);
 
             ctx.clearRect(0, 0, w, h);
 
-            /* ---------- update ---------- */
+            /* ---------- physics ---------- */
 
-            for (const n of nodes) {
+            for (const p of nodes) {
+                // 1) home position drifts in a slow orbit
+                p.tx = p.bx + Math.cos(sim * p.sp + p.ph) * p.ox;
+                p.ty = p.by + Math.sin(sim * p.sp * 0.8 + p.ph) * p.oy;
+
+                // 2) spring pulls the particle back to its home
+                p.vx += (p.tx - p.x) * SPRING * dt;
+                p.vy += (p.ty - p.y) * SPRING * dt;
+
+                // 3) cursor scares it away (smooth falloff + a little swirl)
                 if (mouseOn) {
-                    const dx = n.x - mx;
-                    const dy = n.y - my;
+                    const dx = p.x - mx;
+                    const dy = p.y - my;
                     const d2 = dx * dx + dy * dy;
 
-                    if (d2 < MOUSE_R2) {
+                    if (d2 < FLEE_R2) {
                         const d = Math.sqrt(d2) || 1;
-                        const f =
-                            (1 - d / MOUSE_R) * 0.06 * dt;
+                        const k = 1 - d / FLEE_R;
+                        const f = k * k * FLEE_FORCE * g * boost * p.z * dt;
+                        const nx = dx / d;
+                        const ny = dy / d;
 
-                        n.vx += (dx / d) * f;
-                        n.vy += (dy / d) * f;
+                        p.vx += nx * f - ny * f * SWIRL;
+                        p.vy += ny * f + nx * f * SWIRL;
                     }
                 }
 
-                n.vx +=
-                    Math.cos(n.y * 0.004 + t * 0.3) *
-                    0.0028 *
-                    dt;
+                p.vx *= damp;
+                p.vy *= damp;
 
-                n.vy +=
-                    Math.sin(n.x * 0.004 + t * 0.3) *
-                    0.0028 *
-                    dt;
+                const sp = Math.hypot(p.vx, p.vy);
 
-                n.vx *= damp;
-                n.vy *= damp;
-
-                const sp = Math.hypot(n.vx, n.vy);
-
-                if (sp > 1.2) {
-                    n.vx = (n.vx / sp) * 1.2;
-                    n.vy = (n.vy / sp) * 1.2;
+                if (sp > MAX_SPEED) {
+                    p.vx = (p.vx / sp) * MAX_SPEED;
+                    p.vy = (p.vy / sp) * MAX_SPEED;
                 }
 
-                n.x += n.vx * dt;
-                n.y += n.vy * dt;
+                p.x += p.vx * dt;
+                p.y += p.vy * dt;
 
-                if (n.x < -20) n.x = w + 20;
-                else if (n.x > w + 20) n.x = -20;
-
-                if (n.y < -20) n.y = h + 20;
-                else if (n.y > h + 20) n.y = -20;
+                // how far it is pushed away from home (used for glow)
+                const disp = Math.hypot(p.x - p.tx, p.y - p.ty);
+                p.energy += (clamp(disp / 70, 0, 1) - p.energy) * 0.15;
             }
 
             /* ---------- links ---------- */
@@ -267,14 +325,26 @@ function NetworkCanvas({
                     const dy = a.y - b.y;
                     const d2 = dx * dx + dy * dy;
 
-                    if (d2 > LINK2) continue;
+                    if (d2 > link2) continue;
 
-                    const k = 1 - Math.sqrt(d2) / LINK;
+                    const k = 1 - Math.sqrt(d2) / link;
 
-                    ctx.globalAlpha = k * 0.3;
+                    let alpha = k * 0.32 + (a.energy + b.energy) * 0.06;
 
-                    ctx.strokeStyle =
-                        a.gold && b.gold ? GOLD : primary;
+                    // lines near the cursor light up
+                    if (mouseOn) {
+                        const dm = Math.hypot(
+                            (a.x + b.x) / 2 - mx,
+                            (a.y + b.y) / 2 - my
+                        );
+
+                        if (dm < CURSOR_LINK_R) {
+                            alpha += (1 - dm / CURSOR_LINK_R) * 0.28 * g * k;
+                        }
+                    }
+
+                    ctx.globalAlpha = Math.min(alpha, 0.8);
+                    ctx.strokeStyle = a.gold && b.gold ? GOLD : primary;
 
                     ctx.beginPath();
                     ctx.moveTo(a.x, a.y);
@@ -283,57 +353,44 @@ function NetworkCanvas({
                 }
             }
 
-            /* ---------- cursor links ---------- */
+            /* ---------- cursor strings ---------- */
 
             if (mouseOn) {
                 ctx.strokeStyle = primary;
 
-                for (const n of nodes) {
-                    const dx = n.x - mx;
-                    const dy = n.y - my;
-                    const d2 = dx * dx + dy * dy;
+                for (const p of nodes) {
+                    const d = Math.hypot(p.x - mx, p.y - my);
 
-                    if (d2 > MOUSE_R2) continue;
+                    if (d > CURSOR_LINK_R) continue;
 
-                    ctx.globalAlpha =
-                        (1 - Math.sqrt(d2) / MOUSE_R) * 0.45;
+                    ctx.globalAlpha = (1 - d / CURSOR_LINK_R) * 0.4 * g;
 
                     ctx.beginPath();
                     ctx.moveTo(mx, my);
-                    ctx.lineTo(n.x, n.y);
+                    ctx.lineTo(p.x, p.y);
                     ctx.stroke();
                 }
             }
 
             /* ---------- nodes ---------- */
 
-            for (const n of nodes) {
-                const pulse =
-                    1 + 0.3 * Math.sin(t * 2 + n.phase);
+            for (const p of nodes) {
+                const pulse = 1 + 0.3 * Math.sin(sim * 2 + p.ph);
+                const radius = p.r * p.z * pulse * (1 + p.energy * 0.7);
 
-                ctx.fillStyle = n.gold ? GOLD : primary;
+                ctx.fillStyle = p.gold ? GOLD : primary;
 
-                ctx.globalAlpha = 0.8;
+                ctx.globalAlpha = 0.5 + p.z * 0.3 + p.energy * 0.2;
 
                 ctx.beginPath();
-
-                ctx.arc(n.x, n.y, n.r * pulse, 0, TAU);
-
+                ctx.arc(p.x, p.y, radius, 0, TAU);
                 ctx.fill();
 
-                if (n.gold) {
-                    ctx.globalAlpha = 0.1;
+                if (p.gold) {
+                    ctx.globalAlpha = 0.1 + p.energy * 0.08;
 
                     ctx.beginPath();
-
-                    ctx.arc(
-                        n.x,
-                        n.y,
-                        n.r * pulse * 4,
-                        0,
-                        TAU
-                    );
-
+                    ctx.arc(p.x, p.y, radius * 4, 0, TAU);
                     ctx.fill();
                 }
             }

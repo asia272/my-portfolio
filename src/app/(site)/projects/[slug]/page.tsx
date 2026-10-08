@@ -27,14 +27,14 @@ import {
     Star,
 } from "lucide-react";
 
-import { api } from "../../../../convex/_generated/api";
+import { api } from "../../../../../convex/_generated/api";
 
-import Container from "../../../components/common/Container";
-import SectionHeading from "../../../components/common/SectionHeading";
-import { BackgroundSection } from "../../../components/common/AnimatedBackground";
-import { Reveal } from "../../../components/animations/animations";
-import { Badge } from "../../../components/ui/badge";
-import { GithubIcon } from "../../../components/icons";
+import Container from "../../../../components/common/Container";
+import SectionHeading from "../../../../components/common/SectionHeading";
+import { BackgroundSection } from "../../../../components/common/AnimatedBackground";
+import { Reveal } from "../../../../components/animations/animations";
+import { Badge } from "../../../../components/ui/badge";
+import { GithubIcon } from "../../../../components/icons";
 import { projectTypeLabel } from "@/lib/Projecttypes";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
