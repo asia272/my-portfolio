@@ -26,7 +26,14 @@ export type Project = {
 export type Service = {
     title: string;
     description: string;
-    icon: string;
+    icon:
+    | "rocket"
+    | "shield"
+    | "sparkles"
+    | "palette"
+    | "server"
+    | "wrench"
+    | "globe";
 };
 
 export type ProcessStep = {
