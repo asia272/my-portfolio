@@ -26,7 +26,7 @@ function ProcessTimelineLine() {
             className="pointer-events-none absolute top-7 right-[12.5%] left-[12.5%] hidden h-px lg:block"
         >
             {/* Base line */}
-            {/* <div className="absolute inset-0 bg-gradient-to-r from-transparent via-primary/20 to-transparent" /> */}
+
 
             {/* Animated line */}
             <motion.div

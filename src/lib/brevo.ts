@@ -1,4 +1,9 @@
 import "server-only";
+import type { ContactInput } from "@/lib/contact-schema";
+import {
+    adminContactTemplate,
+    senderAutoReplyTemplate,
+} from "@/lib/email-templates/contact";
 
 import { BrevoClient } from "@getbrevo/brevo";
 
@@ -90,5 +95,52 @@ If you did not request this code, you can safely ignore this email.
 </body>
 </html>
         `.trim(),
+    });
+}
+
+
+
+
+
+// ── add at the bottom of the file ──
+
+function getMailConfig() {
+    const senderEmail = process.env.BREVO_SENDER_EMAIL;
+    const senderName = process.env.BREVO_SENDER_NAME;
+    const adminEmail = process.env.ADMIN_EMAIL;
+
+    if (!senderEmail || !senderName || !adminEmail) {
+        throw new Error("Brevo sender or admin email configuration is missing.");
+    }
+
+    return { senderEmail, senderName, adminEmail };
+}
+
+/** Sends the visitor's message to the admin inbox. */
+export async function sendContactEmailToAdmin(input: ContactInput) {
+    const { senderEmail, senderName, adminEmail } = getMailConfig();
+    const mail = adminContactTemplate(input);
+
+    await brevo.transactionalEmails.sendTransacEmail({
+        sender: { email: senderEmail, name: senderName },
+        to: [{ email: adminEmail }],
+        replyTo: { email: input.email, name: input.name },
+        subject: mail.subject,
+        textContent: mail.text,
+        htmlContent: mail.html,
+    });
+}
+
+/** Sends the "thanks, we'll get back to you" email to the visitor. */
+export async function sendContactAutoReply(input: ContactInput) {
+    const { senderEmail, senderName } = getMailConfig();
+    const mail = senderAutoReplyTemplate(input);
+
+    await brevo.transactionalEmails.sendTransacEmail({
+        sender: { email: senderEmail, name: senderName },
+        to: [{ email: input.email, name: input.name }],
+        subject: mail.subject,
+        textContent: mail.text,
+        htmlContent: mail.html,
     });
 }

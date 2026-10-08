@@ -1,22 +1,6 @@
 "use client";
 
-/**
- * Reusable animated background used by every "Projects" surface:
- *   - the home page showcase   (components/sections/Projects.tsx)
- *   - the /projects page
- *   - the /projects/[slug] detail page
- *
- * It contains: rotating halo, aurora blobs, moving grid, the
- * constellation canvas (edges only) and the cursor-follow glow.
- *
- * Two ways to use it:
- *
- * 1) Simple  -> wrap your content in <BackgroundSection>
- * 2) Manual  -> call useBackgroundPointer(sectionRef, reduced) and
- *               render <AnimatedBackground /> yourself (what the home
- *               showcase does, because it also needs the section ref
- *               for its own logic).
- */
+
 
 import {
     motion,

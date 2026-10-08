@@ -3,48 +3,6 @@ import { animate, motion } from "motion/react";
 import { useEffect, useRef, useState, type ElementType, type ReactNode } from "react";
 
 
-
-
-
-
-/** Interactive particle network that flees the cursor. */
-export function Particles({ count = 60 }: { count?: number }) {
-  const ref = useRef<HTMLCanvasElement>(null);
-  useEffect(() => {
-    const cv = ref.current!;
-    const ctx = cv.getContext("2d")!;
-    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    let w = 0, h = 0, raf = 0, frame = 0, color = "#c53fad", gold = "#f5b942";
-    const m = { x: -999, y: -999 };
-    const resize = () => { const r = cv.parentElement!.getBoundingClientRect(); const d = window.devicePixelRatio || 1; w = r.width; h = r.height; cv.width = w * d; cv.height = h * d; ctx.setTransform(d, 0, 0, d, 0, 0); };
-    resize();
-    const ps = Array.from({ length: count }, () => ({ x: Math.random() * w, y: Math.random() * h, vx: (Math.random() - 0.5) * 0.4, vy: (Math.random() - 0.5) * 0.4, r: Math.random() * 1.6 + 0.6 }));
-    const draw = () => {
-      if (frame++ % 90 === 0) { const s = getComputedStyle(document.documentElement); color = s.getPropertyValue("--primary").trim() || color; gold = s.getPropertyValue("--gold").trim() || gold; }
-      ctx.clearRect(0, 0, w, h);
-      ps.forEach((p, i) => {
-        const dx = p.x - m.x, dy = p.y - m.y, d = Math.hypot(dx, dy);
-        if (d > 0 && d < 140) { p.x += (dx / d) * 1.3; p.y += (dy / d) * 1.3; }
-        p.x += p.vx; p.y += p.vy;
-        if (p.x < 0 || p.x > w) p.vx *= -1;
-        if (p.y < 0 || p.y > h) p.vy *= -1;
-        ctx.fillStyle = i % 7 === 0 ? gold : color; ctx.globalAlpha = 0.75;
-        ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 7); ctx.fill();
-        for (let j = i + 1; j < ps.length; j++) {
-          const q = ps[j], dd = Math.hypot(p.x - q.x, p.y - q.y);
-          if (dd < 110) { ctx.globalAlpha = (1 - dd / 110) * 0.28; ctx.strokeStyle = color; ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(q.x, q.y); ctx.stroke(); }
-        }
-      });
-      if (!reduce) raf = requestAnimationFrame(draw);
-    };
-    draw();
-    const move = (e: PointerEvent) => { const r = cv.getBoundingClientRect(); m.x = e.clientX - r.left; m.y = e.clientY - r.top; };
-    window.addEventListener("pointermove", move); window.addEventListener("resize", resize);
-    return () => { cancelAnimationFrame(raf); window.removeEventListener("pointermove", move); window.removeEventListener("resize", resize); };
-  }, [count]);
-  return <canvas ref={ref} aria-hidden className="absolute inset-0 size-full" />;
-}
-
 /** Items orbiting a centre. `radius` is any CSS length, e.g. "var(--r1)". */
 export function OrbitingCircles({ items, radius, duration = 30, reverse = false }: { items: string[]; radius: string; duration?: number; reverse?: boolean }) {
   const dir = reverse ? -360 : 360;

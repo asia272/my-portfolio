@@ -127,7 +127,7 @@ export default function ProjectsPage() {
 
     return (
         <main>
-            <BackgroundSection className="min-h-screen pb-24 pt-12 sm:pb-28 sm:pt-16 lg:pb-32">
+            <BackgroundSection className="min-h-screen pb-24 pt-18 sm:pb-28 sm:pt-22 lg:pb-32">
                 <Container>
                     <Reveal>
                         <SectionHeading
@@ -166,7 +166,7 @@ export default function ProjectsPage() {
                                         {/* Project type dropdown */}
 
                                         <DropdownMenu>
-                                            <DropdownMenuTrigger asChild >
+                                            <DropdownMenuTrigger>
                                                 <button
                                                     type="button"
                                                     aria-label="Filter by project type"

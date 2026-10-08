@@ -6,11 +6,37 @@ import { Menu, X } from "lucide-react";
 
 import { navigation } from "@/data/navigation";
 import ThemeToggle from "@/components/common/ThemeToggle";
+import { usePathname } from "next/navigation";
 
 
 export default function Navbar() {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileOpen, setIsMobileOpen] = useState(false);
+
+
+
+    const pathname = usePathname();
+    const isHome = pathname === "/";
+
+    const visibleNavigation = isHome
+        ? navigation
+        : navigation.filter(
+            (item) =>
+                item.label === "Home" ||
+                item.label === "Projects" ||
+                item.label === "Contact"
+        );
+    const getNavHref = (item: (typeof navigation)[number]) => {
+        if (isHome) {
+            if (item.label === "Projects") return "#projects";
+            if (item.label === "Contact") return "#contact";
+        }
+
+        if (item.label === "Projects") return "/projects";
+        if (item.label === "Contact") return "/contact";
+
+        return item.href;
+    };
 
     useEffect(() => {
         const handleScroll = () => {
@@ -96,10 +122,10 @@ export default function Navbar() {
 
                     {/* Desktop Navigation */}
                     <div className="hidden items-center gap-1 md:flex">
-                        {navigation.map((item) => (
+                        {visibleNavigation.map((item) => (
                             <Link
                                 key={item.href}
-                                href={item.href}
+                                href={getNavHref(item)}
                                 className="nav-link"
                             >
                                 {item.label}
@@ -177,10 +203,10 @@ export default function Navbar() {
             >
                 <div className="container py-5">
                     <div className="flex flex-col">
-                        {navigation.map((item) => (
+                        {visibleNavigation.map((item) => (
                             <Link
                                 key={item.href}
-                                href={item.href}
+                                href={getNavHref(item)}
                                 onClick={closeMobileMenu}
                                 className="mobile-nav-link"
                             >

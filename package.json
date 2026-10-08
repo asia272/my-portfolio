@@ -17,6 +17,7 @@
     "cn": "^0.4.0",
     "convex": "^1.46.0",
     "embla-carousel-react": "^8.6.0",
+    "groq-sdk": "^1.6.0",
     "lenis": "^1.3.0",
     "lucide-react": "^1.51.0",
     "motion": "^14.0.0",

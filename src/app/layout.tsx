@@ -10,6 +10,8 @@ import ScrollProgress from "@/components/common/ScrollProgress";
 import { cn } from "@/lib/utils";
 import AppConvexProvider from "@/components/providers/ConvexProvider";
 import { Toaster } from "react-hot-toast";
+import Navbar from "@/components/layout/Navbar";
+import { AssistantWidget } from "@/components/assistant/AssistantWidget";
 
 const geist = Geist({ subsets: ['latin'], variable: '--font-sans' });
 
@@ -31,9 +33,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Preloader />
             {/* <Cursor /> */}
             <ScrollProgress />
-
             <AppConvexProvider>
+              <Navbar />
               {children}
+              <AssistantWidget />
               <Toaster position="top-right" />
             </AppConvexProvider>
           </MotionConfig>
