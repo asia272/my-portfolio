@@ -67,6 +67,7 @@ ${projectsText}
 
 Currently building: ${p.currentlyBuilding}
 Looking for: ${p.lookingFor}
+Availability: ${p.availability}
 Services Asia offers:
 ${servicesText}
 

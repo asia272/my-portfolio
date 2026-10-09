@@ -80,6 +80,8 @@ export const assistantProfile = {
 
     lookingFor:
         "Freelance projects, remote work and junior full-stack developer opportunities.",
+    availability:
+        "Yes, Asia is available for work right now. She is open to freelance projects, remote work and  full-stack developer roles.",
     services: [
         "Business and company websites",
         "landing page",
