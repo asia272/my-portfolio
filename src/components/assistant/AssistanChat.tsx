@@ -7,7 +7,7 @@ import { Button } from "../ui/button";
 
 type Message = { role: "user" | "assistant"; content: string };
 
-const ASSISTANT_NAME = "Asia Assistant";
+const ASSISTANT_NAME = "Asia's Assistant";
 const ASSISTANT_PHOTO = "/images/general/asia-assistant.jpg";
 const STORAGE_KEY = "asia-assistant-chat-v1";
 const MAX_STORED = 50;
