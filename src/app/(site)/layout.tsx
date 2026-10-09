@@ -8,7 +8,7 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
     return (
         <>
             <Preloader />
-            <Cursor />
+            {/* <Cursor /> */}
             <ScrollProgress />
             <Navbar />
             {children}
