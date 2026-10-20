@@ -42,8 +42,7 @@ import SectionHeading from "../common/SectionHeading";
 import { Reveal } from "../animations/animations";
 
 import {
-    Carousel,
-    CarouselContent,
+    Carousel,    CarouselContent,
     CarouselItem,
     type CarouselApi,
 } from "../ui/carousel";
