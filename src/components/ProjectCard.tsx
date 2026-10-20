@@ -1,4 +1,3 @@
-
 "use client";
 
 import {
@@ -10,10 +9,7 @@ import {
     type MotionValue,
 } from "motion/react";
 
-import {
-    ArrowUpRight,
-    ExternalLink,
-} from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 
 import Link from "next/link";
 
@@ -24,8 +20,6 @@ import {
 } from "react";
 
 import { Badge } from "./ui/badge";
-import { SpotlightCard } from "./animations/animations";
-import { GithubIcon } from "./icons";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -137,8 +131,10 @@ const getProjectTypeStyle = (type: string) => {
  * Reusable project card.
  *
  * The card intentionally shows only the essential
- * project information. Detailed information belongs
- * on the dedicated project detail page.
+ * project information. Detailed information (including
+ * live demo and source code links) belongs on the
+ * dedicated project detail page. The whole card is a
+ * single clickable link to that page.
  */
 export default function ProjectCard({
     project,
@@ -311,7 +307,17 @@ export default function ProjectCard({
                         }}
                     />
 
-                    <SpotlightCard className="group relative h-full overflow-hidden rounded-[1.5rem] border-border/70 bg-card/95 backdrop-blur-xl transition-colors duration-500 hover:border-primary/30">
+                    <div className="group relative h-full overflow-hidden rounded-[1.5rem] border border-border/70 bg-card/95 backdrop-blur-xl transition-colors duration-500 hover:border-primary/30">
+                        {/* ---------------------------------------------
+                           Whole-card link (opens project detail page)
+                        --------------------------------------------- */}
+
+                        <Link
+                            href={detailHref}
+                            aria-label={`View details of ${project.title}`}
+                            className="absolute inset-0 z-30 rounded-[1.5rem] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                        />
+
                         {/* ---------------------------------------------
                            Active timer
                         --------------------------------------------- */}
@@ -332,73 +338,6 @@ export default function ProjectCard({
                                         className="block h-full bg-gradient-to-r from-primary to-[#ffd36a]"
                                     />
                                 </span>
-                            )}
-
-                        {/* ---------------------------------------------
-                           Active light
-                        --------------------------------------------- */}
-
-                        <div
-                            aria-hidden
-                            className="pointer-events-none absolute inset-0 z-[15]"
-                            style={{
-                                opacity:
-                                    "var(--active, 0)",
-                            }}
-                        >
-                            <motion.div
-                                className="absolute inset-0"
-                                style={{
-                                    background:
-                                        "radial-gradient(ellipse 85% 60% at 0% 0%, rgba(255,211,106,0.28), rgba(255,211,106,0.08) 45%, transparent 72%)",
-                                }}
-                                animate={
-                                    shouldReduceMotion
-                                        ? undefined
-                                        : {
-                                            opacity: [
-                                                0.8,
-                                                1,
-                                                0.72,
-                                                1,
-                                                0.88,
-                                            ],
-                                        }
-                                }
-                                transition={{
-                                    duration: 3.2,
-                                    repeat: Infinity,
-                                    ease: "easeInOut",
-                                }}
-                            />
-                        </div>
-
-                        {/* ---------------------------------------------
-                           Active flare
-                        --------------------------------------------- */}
-
-                        {isActive &&
-                            !shouldReduceMotion && (
-                                <motion.div
-                                    aria-hidden
-                                    initial={{
-                                        opacity: 0.95,
-                                        scale: 0.4,
-                                    }}
-                                    animate={{
-                                        opacity: 0,
-                                        scale: 1.7,
-                                    }}
-                                    transition={{
-                                        duration: 1.1,
-                                        ease: EASE,
-                                    }}
-                                    className="pointer-events-none absolute -left-16 -top-16 z-[16] size-72 rounded-full"
-                                    style={{
-                                        background:
-                                            "radial-gradient(circle, rgba(255,243,196,0.9), rgba(255,211,106,0.35) 40%, transparent 70%)",
-                                    }}
-                                />
                             )}
 
                         {/* ---------------------------------------------
@@ -450,27 +389,6 @@ export default function ProjectCard({
                                 className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-black/10"
                             />
 
-                            {/* Active shine */}
-
-                            {isActive &&
-                                !shouldReduceMotion && (
-                                    <motion.span
-                                        aria-hidden
-                                        initial={{
-                                            x: "-150%",
-                                        }}
-                                        animate={{
-                                            x: "450%",
-                                        }}
-                                        transition={{
-                                            duration: 1.2,
-                                            ease: EASE,
-                                            delay: 0.15,
-                                        }}
-                                        className="pointer-events-none absolute inset-y-0 left-0 w-1/3 -skew-x-12 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-                                    />
-                                )}
-
                             {/* Project number */}
 
                             <div
@@ -491,7 +409,7 @@ export default function ProjectCard({
                            Content
                         --------------------------------------------- */}
 
-                        <div className="flex min-h-[215px] flex-col p-5 sm:p-6">
+                        <div className="flex min-h-[200px] flex-col p-5 sm:p-6">
                             {/* ---------------------------------------------
                                Project type
                             --------------------------------------------- */}
@@ -549,63 +467,22 @@ export default function ProjectCard({
                             </p>
 
                             {/* ---------------------------------------------
-                               Links
+                               View details (visual label only, the whole
+                               card is the link)
                             --------------------------------------------- */}
 
-
-                            <div className="mt-auto flex items-center justify-between gap-3 pt-5">
-                                {/* View details */}
-
-                                <Link
-                                    href={detailHref}
-                                    className="group/details inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3.5 py-2 text-xs font-semibold text-primary transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/50 hover:bg-primary/15 hover:shadow-[0_8px_24px_-12px_var(--primary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
-                                >
+                            <div className="mt-auto flex items-center pt-5">
+                                <span className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3.5 py-2 text-xs font-semibold text-primary transition-all duration-300 group-hover:border-primary/50 group-hover:bg-primary/15">
                                     <span>View Details</span>
 
                                     <ArrowUpRight
-                                        className="size-3.5 transition-transform duration-300 group-hover/details:-translate-y-0.5 group-hover/details:translate-x-0.5"
+                                        className="size-3.5 transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-0.5"
                                         aria-hidden
                                     />
-                                </Link>
-
-                                {/* External links */}
-
-                                <div className="flex items-center gap-2">
-                                    <a
-                                        href={project.live}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        aria-label={`Open ${project.title} live demo`}
-                                        title="Live Demo"
-                                        className="group/link inline-flex items-center gap-1.5 rounded-full border border-border/70 bg-secondary/50 px-3 py-2 text-xs font-medium text-muted-foreground transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/30 hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
-                                    >
-                                        <ExternalLink
-                                            className="size-3.5 transition-transform duration-300 group-hover/link:translate-x-0.5"
-                                            aria-hidden
-                                        />
-
-                                        <span>Live</span>
-                                    </a>
-
-                                    <a
-                                        href={project.repo}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        aria-label={`Open ${project.title} source code`}
-                                        title="Source Code"
-                                        className="group/link inline-flex items-center gap-1.5 rounded-full border border-border/70 bg-secondary/50 px-3 py-2 text-xs font-medium text-muted-foreground transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/30 hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30"
-                                    >
-                                        <GithubIcon
-                                            className="size-3.5 transition-transform duration-300 group-hover/link:scale-110"
-                                            aria-hidden
-                                        />
-
-                                        <span>Code</span>
-                                    </a>
-                                </div>
+                                </span>
                             </div>
                         </div>
-                    </SpotlightCard>
+                    </div>
                 </motion.div>
             </div>
         </motion.div>

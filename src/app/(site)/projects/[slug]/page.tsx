@@ -227,7 +227,7 @@ export default function ProjectDetailPage() {
                                             href={project.github}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="inline-flex h-11 items-center gap-2 rounded-full border border-border/80 bg-background/70 px-5 text-sm font-medium text-muted-foreground transition-colors duration-300 hover:border-primary/40 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+                                            className="custom-btn-outline group inline-flex items-center gap-2"
                                         >
                                             <GithubIcon
                                                 className="size-4"
