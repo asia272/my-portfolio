@@ -1,10 +1,6 @@
-import {
-    redirect,
-} from "next/navigation";
+import { redirect } from "next/navigation";
 
-import {
-    requireAdmin,
-} from "@/lib/admin-auth";
+import { getAdminSession } from "@/lib/admin-auth";
 
 import AdminSidebar from "@/components/admin/AdminSidebar";
 import AdminHeader from "@/components/admin/AdminHeader";
@@ -14,7 +10,12 @@ export default async function DashboardLayout({
 }: {
     children: React.ReactNode;
 }) {
-    await requireAdmin();
+    const session = await getAdminSession();
+
+    // Not logged in: send to login instead of throwing a server error.
+    if (!session) {
+        redirect("/admin/login");
+    }
 
     return (
         <div className="min-h-screen bg-background">
