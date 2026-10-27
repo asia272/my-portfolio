@@ -91,6 +91,11 @@ export default defineSchema({
             v.string(),
         ),
 
+        // NEW: optional Figma file link
+        figma: v.optional(
+            v.string(),
+        ),
+
         mediaType: v.union(
             v.literal("IMAGE"),
             v.literal("VIDEO"),

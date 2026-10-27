@@ -44,6 +44,14 @@ const ProjectSchema = z.object({
         .optional()
         .or(z.literal("")),
 
+    // NEW: optional Figma file link
+    figma: z
+        .string()
+        .trim()
+        .url("Invalid Figma URL")
+        .optional()
+        .or(z.literal("")),
+
     mediaType: z.enum([
         "IMAGE",
         "VIDEO",
@@ -109,6 +117,12 @@ function parseProject(formData: FormData) {
                 formData.get("liveDemo") ?? "",
             ).trim(),
 
+        // NEW: optional Figma file link
+        figma:
+            String(
+                formData.get("figma") ?? "",
+            ).trim(),
+
         mediaType:
             formData.get("mediaType"),
 
@@ -165,6 +179,10 @@ export async function createProject(
 
             liveDemo:
                 data.liveDemo || undefined,
+
+            // NEW
+            figma:
+                data.figma || undefined,
 
             mediaType:
                 data.mediaType,
@@ -225,6 +243,10 @@ export async function updateProject(
 
             liveDemo:
                 data.liveDemo || undefined,
+
+            // NEW
+            figma:
+                data.figma || undefined,
 
             mediaType:
                 data.mediaType,

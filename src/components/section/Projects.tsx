@@ -627,6 +627,7 @@ function ProjectsShowcase() {
                                                 project.description ?? "",
                                             image: project.image ?? "",
                                             live: project.liveDemo ?? "#",
+                                            mediaType: project.mediaType,
                                             type: project.type,
                                             repo: project.github ?? "#",
                                             detailHref: `/projects/${project.slug}`,

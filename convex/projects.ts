@@ -76,6 +76,7 @@ export const create = mutation({
         techStack: v.array(v.string()),
         github: v.optional(v.string()),
         liveDemo: v.optional(v.string()),
+        figma: v.optional(v.string()),
         mediaType,
         mediaStorageId: v.id("_storage"),
         type: projectType,
@@ -106,6 +107,7 @@ export const update = mutation({
 
         github: v.optional(v.string()),
         liveDemo: v.optional(v.string()),
+        figma: v.optional(v.string()),
 
         mediaType,
 
@@ -138,6 +140,8 @@ export const update = mutation({
             }
         }
 
+        // Note: patching an optional field with `undefined`
+        // removes it, so clearing the Figma input clears the link.
         await ctx.db.patch(id, {
             ...data,
             updatedAt: Date.now(),

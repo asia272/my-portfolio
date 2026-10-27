@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState } from "react";
@@ -30,6 +29,7 @@ interface Project {
     techStack: string[];
     github?: string;
     liveDemo?: string;
+    figma?: string;
     mediaType: MediaType;
     mediaStorageId?: string;
     type: ProjectType;
@@ -327,6 +327,30 @@ export default function ProjectForm({ project }: Props) {
                                 className="admin-input"
                             />
                         </div>
+                    </div>
+
+                    {/* Figma (optional) */}
+                    <div>
+                        <label
+                            htmlFor="figma"
+                            className="mb-1.5 block text-sm font-medium"
+                        >
+                            Figma File{" "}
+                            <span className="text-xs font-normal text-muted-foreground">
+                                (optional)
+                            </span>
+                        </label>
+
+                        <input
+                            id="figma"
+                            name="figma"
+                            type="url"
+                            defaultValue={
+                                project?.figma ?? ""
+                            }
+                            placeholder="https://www.figma.com/file/..."
+                            className="admin-input"
+                        />
                     </div>
 
                     {/* ======================================== */}

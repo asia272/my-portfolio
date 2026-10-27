@@ -338,6 +338,7 @@ export default function ProjectsPage() {
                                                             project.description ?? "",
                                                         image: project.image ?? "",
                                                         type: project.type,
+                                                        mediaType: project.mediaType,
                                                         live: project.liveDemo ?? "#",
                                                         repo: project.github ?? "#",
                                                         detailHref: `/projects/${project.slug}`,

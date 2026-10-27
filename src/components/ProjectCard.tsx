@@ -30,6 +30,12 @@ export interface ProjectCardData {
     description: string;
     image: string;
 
+    /**
+     * NEW: media type of `image`.
+     * Optional so existing usages keep compiling;
+     * defaults to "IMAGE" when not provided.
+     */
+    mediaType?: "IMAGE" | "VIDEO";
 
     type: string;
 
@@ -156,6 +162,8 @@ export default function ProjectCard({
             ? GOLD
             : "var(--primary)";
 
+    const isVideo = project.mediaType === "VIDEO";
+
     /* ---------------------------------------------
        3D mouse tilt
     --------------------------------------------- */
@@ -245,6 +253,27 @@ export default function ProjectCard({
 
     const typeStyle =
         getProjectTypeStyle(project.type);
+
+    /* ---------------------------------------------
+       Shared media animation
+    --------------------------------------------- */
+
+    const mediaAnimate = {
+        scale:
+            isActive && !shouldReduceMotion
+                ? 1.08
+                : 1,
+    };
+
+    const mediaTransition = isActive
+        ? {
+            duration: 6.7,
+            ease: "linear" as const,
+        }
+        : {
+            duration: 0.9,
+            ease: EASE,
+        };
 
     return (
         <motion.div
@@ -341,7 +370,7 @@ export default function ProjectCard({
                             )}
 
                         {/* ---------------------------------------------
-                           Project image
+                           Project media (image OR video)
                         --------------------------------------------- */}
 
                         <div className="relative h-[190px] overflow-hidden sm:h-[205px]">
@@ -353,33 +382,36 @@ export default function ProjectCard({
                                     filter: "saturate(calc(0.65 + var(--active, 0) * 0.35))",
                                 }}
                             >
-                                <motion.img
-                                    src={project.image}
-                                    alt={`${project.title} project preview`}
-                                    loading="lazy"
-                                    decoding="async"
-                                    animate={{
-                                        scale:
-                                            isActive &&
-                                                !shouldReduceMotion
-                                                ? 1.08
-                                                : 1,
-                                    }}
-                                    transition={
-                                        isActive
-                                            ? {
-                                                duration:
-                                                    6.7,
-                                                ease: "linear",
-                                            }
-                                            : {
-                                                duration:
-                                                    0.9,
-                                                ease: EASE,
-                                            }
-                                    }
-                                    className="size-full object-cover"
-                                />
+                                {project.image ? (
+                                    isVideo ? (
+                                        <motion.video
+                                            src={project.image}
+                                            autoPlay
+                                            muted
+                                            loop
+                                            playsInline
+                                            preload="metadata"
+                                            aria-label={`${project.title} project preview`}
+                                            animate={mediaAnimate}
+                                            transition={mediaTransition}
+                                            className="size-full object-cover"
+                                        />
+                                    ) : (
+                                        <motion.img
+                                            src={project.image}
+                                            alt={`${project.title} project preview`}
+                                            loading="lazy"
+                                            decoding="async"
+                                            animate={mediaAnimate}
+                                            transition={mediaTransition}
+                                            className="size-full object-cover"
+                                        />
+                                    )
+                                ) : (
+                                    <div className="flex size-full items-center justify-center text-xs text-muted-foreground">
+                                        No preview available
+                                    </div>
+                                )}
                             </div>
 
                             {/* Image overlay */}

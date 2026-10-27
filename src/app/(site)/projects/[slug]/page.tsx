@@ -24,6 +24,7 @@ import {
     ArrowRight,
     ArrowUpRight,
     ExternalLink,
+    PenTool,
     Star,
 } from "lucide-react";
 
@@ -121,6 +122,7 @@ export default function ProjectDetailPage() {
     const tags: string[] = project.techStack ?? [];
     const hasLive = !!project.liveDemo;
     const hasRepo = !!project.github;
+    const hasFigma = !!project.figma;
     const isVideo = project.mediaType === "VIDEO";
     const description: string = project.description ?? "";
 
@@ -205,7 +207,7 @@ export default function ProjectDetailPage() {
 
                             {/* Link buttons under the media */}
 
-                            {(hasLive || hasRepo) && (
+                            {(hasLive || hasRepo || hasFigma) && (
                                 <div className="mt-5 flex flex-wrap items-center gap-3">
                                     {hasLive && (
                                         <a
@@ -234,6 +236,25 @@ export default function ProjectDetailPage() {
                                                 aria-hidden
                                             />
                                             Source code
+                                            <ExternalLink
+                                                className="size-3.5"
+                                                aria-hidden
+                                            />
+                                        </a>
+                                    )}
+
+                                    {hasFigma && (
+                                        <a
+                                            href={project.figma}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="custom-btn-outline group inline-flex items-center gap-2"
+                                        >
+                                            <PenTool
+                                                className="size-4"
+                                                aria-hidden
+                                            />
+                                            Figma file
                                             <ExternalLink
                                                 className="size-3.5"
                                                 aria-hidden
